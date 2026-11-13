@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#07080F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mohey HQ">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src https://script.google.com https://script.googleusercontent.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
+<title>Mohey HQ</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080F;--panel:#0E1020;--panel2:#141731;--text:#EAF0FF;--muted:#93A0BE;--dim:#5C6A88;
+  --cyan:#5CF2FF;--pink:#FF2E93;--pinkSoft:#FF8CC4;--green:#3BFF9E;--amber:#FFB547;
+  --holo:linear-gradient(110deg,#FFD1EC,#C9B6FF,#A6F4FF,#FFF0B8,#FFD1EC);
+  --line:rgba(234,240,255,.12);--spring:cubic-bezier(.2,.9,.3,1.2);
+  --tx:0deg;--ty:0deg;
+  --safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;overscroll-behavior:none}
+body{background-image:linear-gradient(rgba(120,140,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(120,140,255,.06) 1px,transparent 1px);background-size:26px 26px;overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--cyan)}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.grot{font-family:'Space Grotesk',sans-serif}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}
+.holo{background:var(--holo);background-size:200% 100%;animation:holo 7s linear infinite}
+.holo-text{background:var(--holo);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:holo 6s linear infinite}
+@keyframes holo{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes blip{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes blipS{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.35)}}
+@keyframes sweep{to{transform:rotate(360deg)}}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(255,46,147,.55)}100%{box-shadow:0 0 0 18px rgba(255,46,147,0)}}
+@keyframes enter{from{opacity:0;transform:translateY(26px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:translateY(60px) scale(.4)}70%{transform:translateY(-6px) scale(1.06)}100%{opacity:1;transform:none}}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes fill{from{width:0}to{width:100%}}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ripple{from{transform:scale(0);opacity:.6}to{transform:scale(4);opacity:0}}
+@keyframes caret{50%{opacity:0}}
+
+#app{position:fixed;inset:0;overflow:hidden}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow-y:auto;overflow-x:hidden;padding:calc(var(--safe-t) + 18px) 18px calc(var(--safe-b) + 120px);-webkit-overflow-scrolling:touch}
+.screen.on{display:flex;animation:enter .45s var(--spring) both}
+.row{display:flex;align-items:center;gap:10px}
+.between{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.col{display:flex;flex-direction:column}
+.gap6{gap:6px}.gap10{gap:10px}.gap14{gap:14px}
+.iconbtn{width:42px;height:42px;border-radius:13px;border:1px solid rgba(234,240,255,.2);background:transparent;display:flex;align-items:center;justify-content:center;color:var(--text);flex-shrink:0}
+.iconbtn:active{transform:scale(.92)}
+.chip{height:34px;padding:0 14px;border-radius:999px;border:1px solid rgba(234,240,255,.2);background:transparent;color:var(--text);font-size:13px;flex-shrink:0;white-space:nowrap}
+.chip.on{background:var(--text);color:var(--bg);border-color:var(--text);font-weight:700}
+.chip.dim{color:var(--muted)}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.btn{height:52px;border-radius:16px;border:0;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;transition:transform .15s}
+.btn:active{transform:scale(.96)}
+.btn.primary{background:var(--text);color:var(--bg)}
+.btn.green{background:var(--green);color:#03200F}
+.btn.ghost{background:transparent;border:1px solid rgba(234,240,255,.25);color:var(--text)}
+.btn.cyan{background:rgba(92,242,255,.12);border:1px solid rgba(92,242,255,.5);color:var(--cyan)}
+.btn[disabled]{opacity:.5}
+.block{width:100%}
+.card{border-radius:20px;border:1px solid var(--line);background:rgba(14,16,32,.75);padding:14px}
+.pill{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px}
+.p-hot{background:rgba(255,46,147,.18);color:var(--pinkSoft)}
+.p-warm{background:rgba(255,181,71,.16);color:var(--amber)}
+.p-cool{background:rgba(92,242,255,.14);color:var(--cyan)}
+.p-ok{background:rgba(59,255,158,.15);color:var(--green)}
+.p-dim{background:rgba(234,240,255,.08);color:var(--muted)}
+.inp{width:100%;min-height:46px;border-radius:14px;border:1px solid rgba(234,240,255,.16);background:rgba(234,240,255,.05);padding:12px 14px;color:var(--text);outline:none;font-size:15px}
+.inp:focus{border-color:var(--cyan)}
+textarea.inp{min-height:90px;resize:vertical}
+select.inp{appearance:none}
+.flabel{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.4px;color:var(--muted);margin:12px 0 6px;display:block;text-transform:uppercase}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.status-line{min-height:18px;font-size:13px;color:var(--amber);margin-top:8px}
+.empty{padding:30px 10px;text-align:center;color:var(--muted);font-size:14px}
+
+/* status strip */
+.strip{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.8px}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.live{background:var(--green);animation:blip 1.6s infinite}
+
+/* queue deck */
+.deck{position:relative;height:360px;margin-top:10px;perspective:900px}
+.qcard{position:absolute;left:0;right:0;top:26px;height:316px;border-radius:30px;padding:2px;touch-action:none;will-change:transform}
+.qcard.top{background:var(--holo);background-size:200% 100%;animation:holo 7s linear infinite;box-shadow:0 40px 70px -24px rgba(201,182,255,.5);transform:rotateX(var(--ty)) rotateY(var(--tx))}
+.qcard.b1{top:12px;left:12px;right:12px;background:rgba(166,244,255,.2);transform:translateZ(-45px)}
+.qcard.b2{top:0;left:26px;right:26px;background:rgba(201,182,255,.16);transform:translateZ(-90px)}
+.qcard .inner{height:100%;border-radius:28px;background:#0E1020;padding:18px;display:flex;flex-direction:column;gap:9px;overflow:hidden;position:relative}
+.qcard .stamp{position:absolute;top:18px;padding:6px 12px;border-radius:10px;border:2px solid;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:1px;opacity:0}
+.stamp.r{right:18px;color:var(--green);border-color:var(--green);transform:rotate(8deg)}
+.stamp.l{left:18px;color:var(--amber);border-color:var(--amber);transform:rotate(-8deg)}
+.stamp.u{left:50%;transform:translateX(-50%);color:var(--cyan);border-color:var(--cyan)}
+.qtitle{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;line-height:1.1;letter-spacing:-.6px}
+.qbody{font-size:13px;line-height:1.45;color:#D6DEF5;padding:12px;border-radius:16px;background:rgba(234,240,255,.06);overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical}
+.hints{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted);margin-top:auto}
+.hints .go{color:var(--green);animation:nudge 1.4s ease-in-out infinite}
+.actions{display:flex;justify-content:center;gap:22px;align-items:center;margin-top:8px}
+.round{border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(234,240,255,.25);background:rgba(234,240,255,.05);color:var(--text);transition:transform .15s var(--spring)}
+.round:active{transform:scale(.88)}
+.done-state{display:flex;flex-direction:column;align-items:center;gap:10px;padding:60px 10px;text-align:center}
+
+/* dock */
+#dock{position:fixed;left:18px;right:18px;bottom:calc(var(--safe-b) + 18px);height:72px;border-radius:26px;background:rgba(14,16,32,.92);border:1px solid rgba(92,242,255,.25);display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:20;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:transform .35s var(--spring),opacity .25s}
+#dock.hide{transform:translateY(130%);opacity:0;pointer-events:none}
+.dockbtn{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);background:none;border:0;font-family:'JetBrains Mono',monospace;font-size:10px;width:66px}
+.dockbtn.on{color:var(--cyan)}
+#capBtn{width:76px;height:76px;margin-top:-38px;border-radius:50%;border:4px solid var(--bg);display:flex;align-items:center;justify-content:center;color:var(--bg);animation:holo 6s linear infinite,ring 2.4s ease-out infinite;background:var(--holo);background-size:200% 100%;touch-action:none;transition:transform .25s var(--spring)}
+#capBtn.open{transform:rotate(45deg);background:var(--text);animation:none}
+.badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--pink);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px}
+
+/* capture fan */
+#fan{position:fixed;inset:0;z-index:19;display:none;background:radial-gradient(circle at 50% 92%,rgba(201,182,255,.28),rgba(7,8,15,.9) 55%);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+#fan.on{display:block;animation:fade .2s both}
+.fanitem{position:absolute;display:flex;flex-direction:column;align-items:center;gap:6px;width:76px;margin-left:-38px;animation:pop .45s var(--spring) both}
+.fanitem button{width:64px;height:64px;border-radius:50%;border:1px solid rgba(234,240,255,.25);background:rgba(14,16,32,.95);color:var(--text);display:flex;align-items:center;justify-content:center;transition:transform .15s var(--spring)}
+.fanitem.hot button,.fanitem.main button{width:74px;height:74px;border:0;background:var(--holo);background-size:200% 100%;animation:holo 5s linear infinite;color:var(--bg);box-shadow:0 0 36px rgba(201,182,255,.6)}
+.fanitem.hover button{transform:scale(1.18)}
+.fanitem span{font-size:11px;font-weight:600;color:#D6DEF5;text-align:center}
+.fansug{position:absolute;left:18px;right:18px;top:calc(var(--safe-t) + 40px)}
+.fanmore{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* sheet */
+#sheetBg{position:fixed;inset:0;background:rgba(3,4,10,.65);z-index:40;display:none}
+#sheetBg.on{display:block;animation:fade .2s both}
+#sheet{position:fixed;left:0;right:0;bottom:0;max-height:92%;overflow-y:auto;background:var(--panel);border-top:1px solid rgba(201,182,255,.35);border-radius:28px 28px 0 0;z-index:41;padding:10px 18px calc(var(--safe-b) + 24px);display:none}
+#sheet.on{display:block;animation:up .35s var(--spring) both}
+.grab{width:42px;height:4px;border-radius:2px;background:rgba(234,240,255,.25);margin:0 auto 12px}
+.sheet-title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;margin:0 0 4px}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.thumbs img{width:64px;height:64px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;font-size:13px}
+.kv span:nth-child(odd){color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;padding-top:2px}
+
+/* toast */
+#toast{position:fixed;left:50%;top:calc(var(--safe-t) + 14px);transform:translateX(-50%) translateY(-220%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:14px;font-weight:600;font-size:14px;z-index:60;transition:transform .35s var(--spring);max-width:90%;text-align:center}
+#toast.on{transform:translateX(-50%) translateY(0)}
+
+/* brief */
+#brief{position:fixed;inset:0;z-index:30;background:var(--bg);display:none;flex-direction:column;padding:calc(var(--safe-t) + 16px) 22px calc(var(--safe-b) + 24px);background-image:inherit;background-size:26px 26px}
+#brief.on{display:flex;animation:fade .3s both}
+.bars{display:grid;gap:5px}
+.bar{height:3px;border-radius:2px;background:rgba(234,240,255,.2);overflow:hidden}
+.bar i{display:block;height:3px;background:var(--text);width:0}
+.bar.done i{width:100%}
+.bar.now i{animation:fill 6s linear forwards}
+.bar.now.paused i{animation-play-state:paused}
+.slide{flex:1;display:flex;flex-direction:column;gap:20px;padding-top:22px;animation:enter .5s var(--spring) both;overflow:hidden}
+.bigline{font-family:'Space Grotesk',sans-serif;font-size:34px;line-height:1.06;font-weight:700;letter-spacing:-1.2px;margin:0}
+.holocard{border-radius:26px;padding:18px;color:#120C1C;display:flex;flex-direction:column;gap:10px;box-shadow:0 30px 60px -20px rgba(201,182,255,.45);transform:rotateX(var(--ty)) rotateY(var(--tx));transition:transform .2s}
+.tapzones{position:absolute;inset:80px 0 120px;display:grid;grid-template-columns:1fr 2fr}
+
+/* territory */
+.seg{display:grid;padding:4px;border-radius:14px;background:rgba(234,240,255,.06);gap:4px}
+.seg button{height:36px;border-radius:10px;border:0;background:transparent;color:var(--muted);font-weight:600;font-size:13px}
+.seg button.on{background:var(--text);color:var(--bg);font-weight:700}
+.seg.holo-on button.on{background:var(--holo);background-size:200% 100%;animation:holo 6s linear infinite;color:var(--bg)}
+.radar{position:relative;width:min(84vw,320px);aspect-ratio:1;align-self:center;border-radius:50%;border:1px solid rgba(92,242,255,.4);background:radial-gradient(circle,rgba(92,242,255,.08),transparent 70%);margin:14px 0}
+.radar .ring{position:absolute;border-radius:50%;border:1px solid rgba(92,242,255,.2)}
+.radar .sw{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(201,182,255,0) 0deg,rgba(201,182,255,0) 290deg,rgba(201,182,255,.5) 360deg);animation:sweep 4s linear infinite;pointer-events:none}
+.blip{position:absolute;display:flex;flex-direction:column;align-items:center;gap:2px;transform:translate(-50%,-50%);background:none;border:0;padding:6px}
+.blip i{border-radius:50%;display:block;animation:blipS 2s infinite}
+.blip b{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:#BFF8FF;white-space:nowrap}
+.blip.sel b{color:#fff;font-weight:700}
+.lrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(234,240,255,.08);background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;color:var(--text)}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.wa{width:40px;height:40px;border-radius:12px;border:0;background:rgba(59,255,158,.15);color:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fbar{height:30px;border-radius:9px;background:var(--holo);background-size:200% 100%;animation:holo 8s linear infinite;transition:width .6s var(--spring)}
+
+/* quote */
+.qline{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(234,240,255,.08);background:none;border-left:3px solid transparent;width:100%;text-align:left;color:var(--text)}
+.qline.act{background:rgba(201,182,255,.1);border-left-color:#C9B6FF}
+.qline .f{font-family:'JetBrains Mono',monospace;font-size:13px;padding:2px 4px;border-radius:6px}
+.qline .f.act{background:rgba(92,242,255,.18);color:#fff}
+.keypad{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.keypad button{height:52px;border-radius:14px;border:0;background:rgba(234,240,255,.07);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:20px;transition:transform .1s}
+.keypad button:active{transform:scale(.92);background:rgba(234,240,255,.16)}
+.keypad .k2{font-size:12px;font-weight:700;color:var(--muted)}
+.keypad .k2.on{background:rgba(92,242,255,.14);color:var(--cyan)}
+.total{border-radius:22px;padding:14px 16px;color:var(--bg);display:flex;justify-content:space-between;align-items:flex-end}
+
+/* jobs */
+.tl{display:flex;gap:12px;align-items:center;padding:9px 0}
+.tl .t{font-family:'JetBrains Mono',monospace;font-size:12px;width:46px;flex-shrink:0}
+.tl.past{opacity:.5}
+.tl.next{background:rgba(92,242,255,.08);border-radius:12px;padding:9px 10px;margin:0 -10px}
+.nowline{display:flex;gap:12px;align-items:center;padding:4px 0}
+.nowline i{flex:1;height:1px;background:linear-gradient(90deg,var(--pink),transparent)}
+.req{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(234,240,255,.08)}
+
+/* pull to refresh */
+#ptr{position:fixed;left:50%;top:calc(var(--safe-t) + 6px);width:36px;height:36px;margin-left:-18px;border-radius:50%;border:2px solid var(--cyan);border-top-color:transparent;z-index:25;opacity:0;transform:translateY(-40px)}
+#ptr.spin{animation:spin .8s linear infinite;opacity:1;transform:none}
+.rip{position:fixed;width:120px;height:120px;border-radius:50%;background:rgba(201,182,255,.35);pointer-events:none;z-index:24;animation:ripple .7s ease-out forwards}
+
+/* pair */
+#pair{position:fixed;inset:0;z-index:50;background:var(--bg);display:none;flex-direction:column;justify-content:center;padding:24px;gap:14px}
+#pair.on{display:flex}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- QUEUE (home) -->
+  <section class="screen" id="s-queue">
+    <div class="between strip">
+      <span class="row" style="gap:6px;color:#BFF8FF"><span class="dot" id="pcDot"></span><span id="pcLine">—</span></span>
+      <span class="muted" id="nextRun"></span>
+    </div>
+    <div class="between" style="margin-top:16px;align-items:flex-end">
+      <div class="col">
+        <span class="lbl">Queue</span>
+        <span class="grot" id="qCount" style="font-size:40px;font-weight:700;letter-spacing:-1.5px;line-height:1">…</span>
+      </div>
+      <div class="row" style="gap:8px">
+        <button class="iconbtn" id="openBrief" aria-label="Morning brief"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v2M12 19v2M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg></button>
+        <button class="iconbtn" id="refresh" aria-label="Refresh"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chips" id="qFilters" style="margin-top:14px"></div>
+    <div id="deckWrap"></div>
+    <div class="strip muted small" id="syncLine" style="text-align:center;margin-top:18px"></div>
+  </section>
+
+  <!-- TERRITORY -->
+  <section class="screen" id="s-leads">
+    <div class="between">
+      <button class="iconbtn" data-go="queue" aria-label="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="grot" style="font-size:20px;font-weight:700">Territory</span>
+      <button class="iconbtn" id="addLeadBtn" aria-label="Add lead"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+    </div>
+    <div class="seg" id="leadSeg" style="grid-template-columns:repeat(3,1fr);margin-top:14px">
+      <button data-v="radar" class="on">Radar</button><button data-v="list">List</button><button data-v="funnel">Funnel</button>
+    </div>
+    <div id="leadView" class="col"></div>
+  </section>
+
+  <!-- JOBS -->
+  <section class="screen" id="s-jobs">
+    <div class="between">
+      <button class="iconbtn" data-go="queue" aria-label="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="grot" style="font-size:20px;font-weight:700">Agents</span>
+      <button class="iconbtn" id="settingsBtn" aria-label="App settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></button>
+    </div>
+    <div id="jobsView" class="col gap14" style="margin-top:14px"></div>
+  </section>
+
+  <!-- QUOTE -->
+  <section class="screen" id="s-quote" style="padding-bottom:calc(var(--safe-b) + 24px)">
+    <div id="quoteView" class="col gap10"></div>
+  </section>
+</div>
+
+<nav id="dock">
+  <button class="dockbtn" data-go="leads"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 12l6-6"/></svg>LEADS</button>
+  <button id="capBtn" aria-label="Capture: tap or hold"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
+  <button class="dockbtn" data-go="jobs" style="position:relative"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/></svg>AGENTS<span class="badge" id="jobsBadge" style="display:none"></span></button>
+</nav>
+
+<div id="fan"></div>
+<div id="brief"></div>
+<div id="sheetBg"></div>
+<div id="sheet"></div>
+<div id="toast"></div>
+<div id="ptr"></div>
+
+<div id="pair">
+  <span class="lbl" style="color:var(--cyan)">MOHEY//HQ · FIRST RUN</span>
+  <h1 class="bigline">Connect to your sheets</h1>
+  <p class="muted" style="margin:0">Paste the API URL from Apps Script (Deploy → Web app) and the key that <span class="mono">setup()</span> printed. You do this once.</p>
+  <label class="flabel" for="pairUrl">API URL</label>
+  <input class="inp" id="pairUrl" type="url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off">
+  <label class="flabel" for="pairKey">Key</label>
+  <input class="inp" id="pairKey" autocomplete="off" spellcheck="false">
+  <button class="btn primary block" id="pairGo" style="margin-top:10px">Connect</button>
+  <div class="status-line" id="pairErr"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
+<script>
+(() => {
+'use strict';
+const VERSION = '1.0.0';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem('mhq_' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('mhq_' + k, JSON.stringify(v)); } catch (e) {} }
+};
+const uid = (p) => p + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
+
+/* ---------- time (India) ---------- */
+const ist = () => new Date(Date.now() + (330 + new Date().getTimezoneOffset()) * 60000);
+const pad = (n) => String(n).padStart(2, '0');
+const dstr = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const todayIST = () => dstr(ist());
+const nowIST = () => { const d = ist(); return dstr(d) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const addDays = (s, n) => { const d = new Date(s + 'T00:00:00'); d.setDate(d.getDate() + n); return dstr(d); };
+const daysBetween = (a, b) => Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 864e5);
+const parseDay = (s) => { const m = /(\d{4})-(\d{2})-(\d{2})/.exec(String(s || '')); return m ? m[0] : ''; };
+const fmtDay = (s) => { const d = parseDay(s); if (!d) return s || ''; const x = new Date(d + 'T00:00:00'); return x.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); };
+const inr = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+
+/* ---------- haptics & tilt ---------- */
+const HAP = { tap: 8, soft: 5, swipe: 22, ok: [12, 50, 22], err: [40, 60, 40], hold: 15 };
+const hap = (k) => { try { if (navigator.vibrate && !LS.get('noHaptics', false)) navigator.vibrate(HAP[k] || 8); } catch (e) {} };
+document.addEventListener('pointerdown', (e) => { if (e.target.closest('button,a,.lrow,.qline,select')) hap('tap'); }, { passive: true });
+let tiltOn = false;
+function startTilt() {
+  if (tiltOn) return;
+  const go = () => {
+    tiltOn = true;
+    window.addEventListener('deviceorientation', (e) => {
+      if (e.beta == null) return;
+      const x = Math.max(-14, Math.min(14, (e.gamma || 0) * .5));
+      const y = Math.max(-12, Math.min(12, ((e.beta || 0) - 45) * -.35));
+      document.documentElement.style.setProperty('--tx', x.toFixed(1) + 'deg');
+      document.documentElement.style.setProperty('--ty', y.toFixed(1) + 'deg');
+    });
+  };
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission().then(r => { if (r === 'granted') go(); }).catch(() => {});
+  } else go();
+}
+document.addEventListener('click', startTilt, { once: true });
+
+/* ---------- toast & sheet ---------- */
+let toastT;
+function toast(msg, kind) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); hap(kind === 'err' ? 'err' : 'ok'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2600); }
+let sheetClose = null;
+function sheet(html, mount, onClose) {
+  const s = $('#sheet'); s.innerHTML = '<div class="grab"></div>' + html; s.classList.add('on'); $('#sheetBg').classList.add('on'); s.scrollTop = 0;
+  sheetClose = onClose || null; if (mount) mount(s); hap('soft');
+}
+function closeSheet() { $('#sheet').classList.remove('on'); $('#sheetBg').classList.remove('on'); $('#sheet').innerHTML = ''; const f = sheetClose; sheetClose = null; if (f) f(); }
+$('#sheetBg').addEventListener('click', closeSheet);
+(() => { // drag the sheet down to close
+  let y0 = null, dy = 0; const s = $('#sheet');
+  s.addEventListener('touchstart', (e) => { if (s.scrollTop <= 0) { y0 = e.touches[0].clientY; dy = 0; } }, { passive: true });
+  s.addEventListener('touchmove', (e) => { if (y0 == null) return; dy = e.touches[0].clientY - y0; if (dy > 0) s.style.transform = 'translateY(' + dy + 'px)'; }, { passive: true });
+  s.addEventListener('touchend', () => { if (y0 == null) return; s.style.transform = ''; if (dy > 110) closeSheet(); y0 = null; });
+})();
+
+/* ---------- API + outbox ---------- */
+const S = { url: LS.get('url', ''), key: LS.get('key', ''), data: LS.get('data', null), loading: false, lastSync: LS.get('lastSync', '') };
+async function api(action, data, cid, timeout = 60000) {
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), timeout);
+  let r;
+  try {
+    r = await fetch(S.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ token: S.key, action, data, cid }), redirect: 'follow', cache: 'no-store', credentials: 'omit', signal: ctl.signal });
+  } catch (e) { const err = new Error('offline'); err.net = true; throw err; } finally { clearTimeout(t); }
+  let j; try { j = await r.json(); } catch (e) { const err = new Error('The server sent an unexpected reply'); err.net = true; throw err; }
+  if (!j.ok) { const err = new Error(j.error === 'auth' ? 'The app key is wrong — open Agents → settings' : j.error); err.auth = j.error === 'auth'; throw err; }
+  return j.data;
+}
+const DB = (() => {
+  let dbp;
+  const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('mohey-hq', 1); r.onupgradeneeded = () => r.result.createObjectStore('outbox', { keyPath: 'cid' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const tx = async (mode, fn) => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction('outbox', mode); const st = t.objectStore('outbox'); const out = fn(st); t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error); }); };
+  return { put: (v) => tx('readwrite', s => s.put(v)), del: (k) => tx('readwrite', s => s.delete(k)), all: () => tx('readonly', s => s.getAll()) };
+})();
+let flushing = false;
+async function send(action, data, label) {
+  const item = { cid: uid('c'), action, data, label: label || action, ts: Date.now(), tries: 0 };
+  await DB.put(item); updateOutbox(); flush(); return item.cid;
+}
+async function flush() {
+  if (flushing || !S.url) return; flushing = true;
+  try {
+    const items = (await DB.all()).sort((a, b) => a.ts - b.ts);
+    for (const it of items) {
+      try { await api(it.action, it.data, it.cid, 120000); await DB.del(it.cid); }
+      catch (e) {
+        if (e.net) break;
+        it.tries = (it.tries || 0) + 1;
+        if (it.tries >= 3) { await DB.del(it.cid); toast('Couldn\'t save: ' + it.label + ' — ' + e.message, 'err'); }
+        else await DB.put(it);
+      }
+    }
+  } finally { flushing = false; updateOutbox(); }
+}
+async function updateOutbox() {
+  let n = 0; try { n = (await DB.all()).length; } catch (e) {}
+  const line = $('#syncLine'); if (!line) return;
+  const when = S.lastSync ? 'updated ' + S.lastSync.slice(11) : '';
+  line.textContent = (n ? n + ' waiting to send · ' : '') + (navigator.onLine ? when : 'offline · ' + when);
+}
+window.addEventListener('online', () => { flush(); load(); });
+window.addEventListener('offline', updateOutbox);
+setInterval(flush, 30000);
+
+/* ---------- data ---------- */
+async function load(manual) {
+  if (!S.url || S.loading) return; S.loading = true;
+  if (manual) $('#ptr').classList.add('spin');
+  try {
+    const d = await api('bootstrap', {}, null, 45000);
+    S.data = d; LS.set('data', d); S.lastSync = nowIST(); LS.set('lastSync', S.lastSync);
+    renderAll(); if (manual) toast('Up to date');
+    maybeBrief();
+  } catch (e) {
+    if (e.auth) { showPair(e.message); }
+    else if (manual) toast(e.net ? 'Offline — showing saved data' : e.message, 'err');
+  } finally { S.loading = false; $('#ptr').classList.remove('spin'); updateOutbox(); }
+}
+const D = () => S.data || { leads: [], tenders: [], requests: [], log: [], settings: {}, hidden: [], products: [] };
+function patchLead(id, set, note) {
+  const l = D().leads.find(x => x['Lead ID'] === id); if (!l) return;
+  Object.assign(l, set); if (note) l.Notes = (l.Notes ? l.Notes + '\n' : '') + '[' + todayIST() + '] ' + note;
+  LS.set('data', S.data);
+}
+function saveLead(id, set, note, label) { patchLead(id, set, note); send('leadUpdate', { id, set, note }, label || ('lead ' + id)); renderAll(); }
+
+/* ---------- agents & schedule ---------- */
+const AGENTS = [
+  { name: 'Lead Hunter', where: 'cloud', days: [1, 4], t: '08:17' },
+  { name: 'Follow-up Chaser', where: 'cloud', days: [3, 6], t: '08:43' },
+  { name: 'Competitor Watcher', where: 'cloud', days: [5], t: '08:37' },
+  { name: 'Manager', label: 'Monday brief', where: 'cloud', days: [1], t: '09:13' },
+  { name: 'Tender Watcher', where: 'cloud', days: [2, 4, 6], t: '08:29' },
+  { name: 'Catalogue Agent', where: 'cloud', days: [1, 2, 3, 4, 5, 6], t: '08:51' },
+  { name: 'Repeat-customer agent', label: 'Repeat customers', where: 'cloud', days: [1], t: '08:03' },
+  { name: 'Request Runner', where: 'cloud', hourly: true },
+  { name: 'Google Review Replies', label: 'Review replies', where: 'pc', days: [3, 6], t: '11:45', lt: '20:47' },
+  { name: 'Instagram Lead Sweep', label: 'Instagram sweep', where: 'pc', days: [5], t: '11:45', lt: '20:23' },
+  { name: 'Weekly Google post', where: 'pc', days: [2], t: '11:13', lt: '20:11' },
+  { name: 'Catafy Uploader', where: 'pc', days: [0, 1, 2, 3, 4, 5, 6], t: '12:13', lt: '21:07' }
+];
+const mode = () => (D().settings.working_computer || 'Store');
+function todaysRuns() {
+  const d = ist(), dow = d.getDay(), m = mode(), runs = [];
+  AGENTS.forEach(a => {
+    if (a.hourly) { const h = d.getMinutes() < 7 ? d.getHours() : d.getHours() + 1; if (h >= 7 && h <= 23) runs.push({ t: pad(h) + ':07', name: a.name, label: 'Request Runner · hourly', where: 'CLOUD' }); return; }
+    if (!a.days.includes(dow)) return;
+    if (a.where === 'cloud') runs.push({ t: a.t, name: a.name, label: a.label || a.name, where: 'CLOUD' });
+    else {
+      runs.push({ t: a.t, name: a.name, label: a.label || a.name, where: 'STORE', skip: m === 'Laptop' });
+      runs.push({ t: a.lt, name: a.name, label: a.label || a.name, where: 'LAPTOP', skip: m === 'Store', maybe: m === 'Auto' });
+    }
+  });
+  return runs.sort((x, y) => x.t.localeCompare(y.t));
+}
+function nextRun() { const n = pad(ist().getHours()) + ':' + pad(ist().getMinutes()); return todaysRuns().find(r => r.t > n && !r.skip); }
+function seen(k) { const v = D().settings[k]; return v && /\d{4}-\d{2}-\d{2}/.test(v) ? v : ''; }
+
+/* ---------- queue ---------- */
+const snoozed = () => LS.get('snooze', {});
+function snooze(key, days = 1) { const s = snoozed(); s[key] = addDays(todayIST(), days); LS.set('snooze', s); }
+function isSnoozed(key) { const s = snoozed()[key]; return s && s > todayIST(); }
+const phoneOf = (p) => { let d = String(p || '').split(/[,/;]/)[0].replace(/\D/g, ''); if (d.length === 10) d = '91' + d; if (d.length === 11 && d[0] === '0') d = '91' + d.slice(1); return d.length >= 11 ? d : ''; };
+function buildQueue() {
+  const data = D(), t = todayIST(), items = [], hidden = new Set(data.hidden || []);
+  data.requests.filter(r => r.Status === 'Ready to bill').forEach(r => items.push({ key: 'upi:' + r['Request ID'], kind: 'upi', pri: 0, r }));
+  data.requests.filter(r => r.Status === 'Failed' && parseDay(r.Finished || r.Created) >= addDays(t, -7)).forEach(r => { const k = 'fail:' + r['Request ID']; if (!hidden.has(k)) items.push({ key: k, kind: 'fail', pri: 1, r }); });
+  data.tenders.filter(x => x.Status === 'Open').forEach(x => { const close = parseDay(x['Bid closing date']); if (close && close < t) return; items.push({ key: 'tender:' + x['Tender ID'], kind: 'tender', pri: close && daysBetween(t, close) <= 7 ? 1 : 3, x, close }); });
+  data.leads.forEach(l => {
+    const st = l.Status || 'New', fu = parseDay(l['Next follow-up']), sc = l.Score;
+    if ((st === 'Contacted' || st === 'Replied') && fu && fu <= t) items.push({ key: 'fu:' + l['Lead ID'], kind: 'fu', pri: 2, l });
+    else if (st === 'New' && sc === 'Hot') items.push({ key: 'lead:' + l['Lead ID'], kind: 'lead', pri: 2, l });
+    else if (st === 'New' && sc === 'Warm') items.push({ key: 'lead:' + l['Lead ID'], kind: 'lead', pri: 5, l });
+  });
+  data.log.filter(g => g['Needs Dhruv'] && parseDay(g.Date) >= addDays(t, -7)).forEach(g => {
+    const k = 'need:' + (g.Date + '|' + g.Agent + '|' + g['Needs Dhruv']).slice(0, 180);
+    if (!hidden.has(k)) items.push({ key: k, kind: 'need', pri: 4, g });
+  });
+  return items.filter(i => !isSnoozed(i.key)).sort((a, b) => a.pri - b.pri);
+}
+const KIND_FILTERS = [['all', 'All'], ['leads', 'Leads'], ['tenders', 'Tenders'], ['bills', 'Bills'], ['agents', 'Agents']];
+const kindGroup = (k) => ({ lead: 'leads', fu: 'leads', tender: 'tenders', upi: 'bills', fail: 'agents', need: 'agents' }[k]);
+let qFilter = 'all';
+function renderQueue() {
+  const all = buildQueue(); const items = qFilter === 'all' ? all : all.filter(i => kindGroup(i.kind) === qFilter);
+  const count = (g) => g === 'all' ? all.length : all.filter(i => kindGroup(i.kind) === g).length;
+  $('#qCount').textContent = all.length ? all.length + ' to clear' : 'All clear';
+  $('#qFilters').innerHTML = KIND_FILTERS.map(([k, n]) => `<button class="chip ${qFilter === k ? 'on' : count(k) ? '' : 'dim'}" data-f="${k}">${n} ${count(k)}</button>`).join('');
+  // status strip
+  const m = mode(); const lastStore = seen('store_last_seen'), lastLap = seen('laptop_last_seen');
+  const pc = m === 'Laptop' ? 'LAPTOP' : m === 'Auto' ? 'AUTO' : 'STORE PC';
+  const last = m === 'Laptop' ? lastLap : lastStore;
+  const fresh = last && daysBetween(parseDay(last), todayIST()) <= 1;
+  $('#pcDot').className = 'dot ' + (fresh ? 'live' : ''); $('#pcDot').style.background = fresh ? '' : 'var(--dim)';
+  $('#pcLine').textContent = pc + (last ? ' · SEEN ' + fmtDay(last).toUpperCase() : ' · IN CHARGE');
+  const nr = nextRun(); $('#nextRun').textContent = nr ? 'NEXT ' + nr.t : '';
+  const w = $('#deckWrap');
+  if (!S.data) { w.innerHTML = '<div class="empty">Loading your queue…</div>'; return; }
+  if (!items.length) {
+    w.innerHTML = `<div class="done-state"><div class="holo" style="width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--bg)"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg></div><span class="grot" style="font-size:24px;font-weight:700">${qFilter === 'all' ? 'Queue clear' : 'Nothing here'}</span><span class="muted">${qFilter === 'all' ? 'Hold the camera button to capture something, or check Territory for more leads.' : 'Try All.'}</span></div>`;
+    return;
+  }
+  const top = items.slice(0, 3);
+  w.innerHTML = `<div class="deck">${top.map((it, i) => i === 0 ? cardHTML(it) : `<div class="qcard ${i === 1 ? 'b1' : 'b2'}"></div>`).reverse().join('')}</div>
+    <div class="actions">${actionButtons(items[0])}</div>`;
+  bindDeck(items[0]);
+}
+function badge(it) {
+  if (it.kind === 'lead') return `<span class="pill ${it.l.Score === 'Hot' ? 'p-hot' : 'p-warm'}">${esc((it.l.Score || '').toUpperCase())} · NEW</span>`;
+  if (it.kind === 'fu') { const d = daysBetween(parseDay(it.l['Last contact']) || todayIST(), todayIST()); return `<span class="pill p-cool">FOLLOW-UP · ${d >= 14 ? 'FINAL' : d >= 7 ? '2ND' : '1ST'}</span>`; }
+  if (it.kind === 'tender') return `<span class="pill ${it.pri === 1 ? 'p-hot' : 'p-cool'}">TENDER${it.close ? ' · CLOSES ' + esc(fmtDay(it.close).toUpperCase()) : ''}</span>`;
+  if (it.kind === 'upi') return '<span class="pill p-ok">UPI BILLS · READY</span>';
+  if (it.kind === 'fail') return '<span class="pill p-warm">REQUEST FAILED</span>';
+  return `<span class="pill p-dim">${esc((it.g.Agent || 'AGENT').toUpperCase())}</span>`;
+}
+const HINTS = {
+  lead: ['← LATER', '↑ CALL', 'WHATSAPP →'], fu: ['← LATER', '↑ CALL', 'NUDGE →'], tender: ['← SKIP', '', 'INTERESTED →'],
+  upi: ['← LATER', '', 'BILL IT →'], fail: ['← LATER', '', 'GOT IT →'], need: ['← LATER', '', 'DONE →']
+};
+const STAMPS = { lead: ['LATER', 'CALL', 'WHATSAPP'], fu: ['LATER', 'CALL', 'NUDGE'], tender: ['SKIP', '', 'INTERESTED'], upi: ['LATER', '', 'BILL IT'], fail: ['LATER', '', 'GOT IT'], need: ['LATER', '', 'DONE'] };
+function cardHTML(it) {
+  let title = '', sub = '', body = '', side = '';
+  if (it.kind === 'lead' || it.kind === 'fu') {
+    const l = it.l; title = l.Name; sub = [l.Type, l.Town].filter(Boolean).join(' · '); side = l['Lead ID'] + (l.Town ? ' · ' + l.Town.toUpperCase() : '');
+    body = it.kind === 'fu' ? 'Last contact ' + esc(fmtDay(l['Last contact'])) + '. ' + esc(followText(l)) : (l['Why it is a lead'] ? esc(l['Why it is a lead']) : '“' + esc((l['Pitch (WhatsApp draft)'] || '').slice(0, 160)) + '…”');
+  } else if (it.kind === 'tender') {
+    const x = it.x; title = x['Buyer / Department'] || 'Tender'; sub = [x.Items, x.Location].filter(Boolean).join(' · '); side = x.Portal || '';
+    body = [x['Quantity / Value'], x['Eligibility / EMD notes']].filter(Boolean).map(esc).join('<br>');
+  } else if (it.kind === 'upi') {
+    title = it.r.Summary || 'UPI bills'; sub = 'Run the UPI Bills task on the Vyapar computer'; body = esc(it.r['Result note'] || '');
+  } else if (it.kind === 'fail') {
+    title = it.r.Summary || it.r.Type; sub = it.r.Type; body = esc(it.r['Result note'] || 'No reason given');
+  } else { title = it.g['Needs Dhruv']; sub = it.g.Agent + ' · ' + fmtDay(it.g.Date); body = esc(it.g.Summary || ''); }
+  const h = HINTS[it.kind], s = STAMPS[it.kind];
+  return `<div class="qcard top" id="topCard"><div class="inner">
+    <span class="stamp r">${s[2]}</span><span class="stamp l">${s[0]}</span>${s[1] ? `<span class="stamp u">${s[1]}</span>` : ''}
+    <div class="between">${badge(it)}<span class="mono small muted" style="font-size:11px">${esc(side)}</span></div>
+    <span class="qtitle">${esc(title)}</span>
+    ${sub ? `<span class="small muted">${esc(sub)}</span>` : ''}
+    ${body ? `<div class="qbody">${body}</div>` : ''}
+    <div class="hints"><span>${h[0]}</span><span>${h[1]}</span><span class="go">${h[2]}</span></div>
+  </div></div>`;
+}
+const ICON = {
+  later: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  call: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>',
+  wa: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>',
+  ok: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg>',
+  x: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  info: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>'
+};
+function actionButtons(it) {
+  const L = `<button class="round" style="width:56px;height:56px" data-act="left" aria-label="Later">${it.kind === 'tender' ? ICON.x : ICON.later}</button>`;
+  const R = `<button class="round" style="width:60px;height:60px;border:0;background:var(--green);color:#03200F" data-act="right" aria-label="Do it">${it.kind === 'lead' || it.kind === 'fu' ? ICON.wa : ICON.ok}</button>`;
+  const U = (it.kind === 'lead' || it.kind === 'fu') ? `<button class="round" style="width:66px;height:66px;border-color:var(--cyan);background:rgba(92,242,255,.12);color:var(--cyan)" data-act="up" aria-label="Call">${ICON.call}</button>`
+    : `<button class="round" style="width:56px;height:56px" data-act="info" aria-label="Details">${ICON.info}</button>`;
+  return L + U + R;
+}
+function bindDeck(it) {
+  const c = $('#topCard'); if (!c) return;
+  let sx = 0, sy = 0, dx = 0, dy = 0, drag = false, moved = false;
+  const stamps = { r: $('.stamp.r', c), l: $('.stamp.l', c), u: $('.stamp.u', c) };
+  c.addEventListener('pointerdown', (e) => { drag = true; moved = false; sx = e.clientX; sy = e.clientY; c.setPointerCapture(e.pointerId); c.style.transition = 'none'; c.style.animationPlayState = 'paused'; });
+  c.addEventListener('pointermove', (e) => {
+    if (!drag) return; dx = e.clientX - sx; dy = e.clientY - sy; if (Math.abs(dx) + Math.abs(dy) > 6) moved = true;
+    c.style.transform = `translate(${dx}px,${dy}px) rotate(${dx / 18}deg)`;
+    stamps.r.style.opacity = Math.max(0, Math.min(1, dx / 100)); stamps.l.style.opacity = Math.max(0, Math.min(1, -dx / 100));
+    if (stamps.u) stamps.u.style.opacity = Math.max(0, Math.min(1, -dy / 110 - Math.abs(dx) / 200));
+  });
+  const end = () => {
+    if (!drag) return; drag = false; c.style.transition = 'transform .35s var(--spring)';
+    const up = stamps.u && dy < -110 && Math.abs(dx) < 90;
+    if (dx > 100) fly(c, 'right', it); else if (dx < -100) fly(c, 'left', it); else if (up) fly(c, 'up', it);
+    else { c.style.transform = ''; Object.values(stamps).forEach(s => s && (s.style.opacity = 0)); if (!moved) openItem(it); }
+    dx = dy = 0;
+  };
+  c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+  $$('.actions [data-act]').forEach(b => b.addEventListener('click', () => { const a = b.dataset.act; if (a === 'info') openItem(it); else fly(c, a, it); }));
+}
+function fly(c, dir, it) {
+  hap('swipe');
+  c.style.transition = 'transform .4s cubic-bezier(.4,0,.2,1), opacity .4s';
+  c.style.transform = dir === 'right' ? 'translate(140%,-20px) rotate(24deg)' : dir === 'left' ? 'translate(-140%,-20px) rotate(-24deg)' : 'translate(0,-140%)';
+  c.style.opacity = '0';
+  setTimeout(() => { act(it, dir); renderQueue(); }, 260);
+}
+let pendingReturn = null;
+function followText(l) {
+  const d = daysBetween(parseDay(l['Last contact']) || todayIST(), todayIST());
+  if (d >= 14) return 'Hi, Dhruv from Mohey Home again. I won\'t keep messaging — if linen, rugs or sofa covers come up for you, I\'m a call away. Wishing you a good season. Dhruv, 88688 39339';
+  if (d >= 7) return 'Hi, Dhruv from Mohey Home here. I\'ll be near you this week — could I drop by for 10 minutes with a few samples? Dhruv, 88688 39339';
+  return 'Hi, Dhruv from Mohey Home again — just checking you saw my earlier message. Happy to send our catalogue or a few samples. Dhruv, 88688 39339';
+}
+function act(it, dir) {
+  if (dir === 'left') { snooze(it.key, 1); toast(it.kind === 'tender' ? 'Skipped' : 'Moved to tomorrow'); if (it.kind === 'tender') { it.x.Status = 'Skipped'; LS.set('data', S.data); send('tenderSet', { id: it.x['Tender ID'], status: 'Skipped' }, 'tender'); } return; }
+  if (it.kind === 'lead' || it.kind === 'fu') {
+    const l = it.l, ph = phoneOf(l.Phone);
+    if (dir === 'up') { if (!ph) { toast('No phone number for this lead', 'err'); openLead(l['Lead ID']); return; } snooze(it.key, 1); pendingReturn = { kind: 'call', id: l['Lead ID'], fu: it.kind === 'fu' }; location.href = 'tel:+' + ph; return; }
+    const text = it.kind === 'fu' ? followText(l) : (l['Pitch (WhatsApp draft)'] || '');
+    if (!ph) { copy(text); toast('No phone — pitch copied'); openLead(l['Lead ID']); return; }
+    snooze(it.key, 1); pendingReturn = { kind: 'sent', id: l['Lead ID'], fu: it.kind === 'fu' };
+    window.open('https://wa.me/' + ph + '?text=' + encodeURIComponent(text), '_blank');
+    return;
+  }
+  if (it.kind === 'tender') { it.x.Status = 'Interested'; LS.set('data', S.data); send('tenderSet', { id: it.x['Tender ID'], status: 'Interested' }, 'tender'); toast('Marked interested'); return; }
+  if (it.kind === 'upi') { snooze(it.key, 1); toast('Open Claude on the Vyapar computer and run “UPI Bills”'); return; }
+  hideKey(it.key); toast('Done');
+}
+function hideKey(k) { D().hidden.push(k); LS.set('data', S.data); send('hide', { key: k }, 'done'); }
+function openItem(it) {
+  if (it.kind === 'lead' || it.kind === 'fu') return openLead(it.l['Lead ID']);
+  if (it.kind === 'tender') { const x = it.x; return sheet(`<h2 class="sheet-title">${esc(x['Buyer / Department'])}</h2><div class="kv" style="margin-top:10px">${['Items', 'Quantity / Value', 'Location', 'Bid closing date', 'Portal', 'Eligibility / EMD notes', 'Notes'].map(k => x[k] ? `<span>${esc(k)}</span><span>${esc(x[k])}</span>` : '').join('')}</div>${x.Link ? `<a class="btn ghost block" style="margin-top:16px;text-decoration:none" href="${esc(x.Link)}" target="_blank" rel="noopener">Open tender</a>` : ''}`); }
+  const r = it.r || {}, g = it.g || {};
+  sheet(`<h2 class="sheet-title">${esc(r.Summary || g['Needs Dhruv'] || '')}</h2><p class="muted small">${esc(r.Type || g.Agent || '')}</p><p style="white-space:pre-wrap">${esc(r['Result note'] || g.Summary || '')}</p>${r['Result link'] ? `<a class="btn ghost block" style="text-decoration:none" href="${esc(r['Result link'])}" target="_blank" rel="noopener">Open result</a>` : ''}`);
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  if (pendingReturn) { const p = pendingReturn; pendingReturn = null; setTimeout(() => p.kind === 'sent' ? askSent(p) : askCall(p), 350); }
+  if (S.url) { flush(); if (!S.lastSync || Date.now() - (LS.get('lastLoadMs', 0)) > 5 * 60000) { LS.set('lastLoadMs', Date.now()); load(); } }
+});
+function askSent(p) {
+  const l = D().leads.find(x => x['Lead ID'] === p.id); if (!l) return;
+  sheet(`<h2 class="sheet-title">Sent to ${esc(l.Name)}?</h2><p class="muted small">I'll set a follow-up in 3 days.</p>
+    <div class="grid2" style="margin-top:14px"><button class="btn green" id="ys">Yes, sent</button><button class="btn ghost" id="no">Not yet</button></div>`, (s) => {
+    $('#ys', s).onclick = () => { saveLead(p.id, { Status: 'Contacted', 'Last contact': todayIST(), 'Next follow-up': addDays(todayIST(), p.fu ? 7 : 3) }, p.fu ? 'Follow-up sent on WhatsApp' : 'Pitch sent on WhatsApp'); closeSheet(); toast('Logged · follow-up set'); };
+    $('#no', s).onclick = () => { const s2 = snoozed(); delete s2[(p.fu ? 'fu:' : 'lead:') + p.id]; LS.set('snooze', s2); closeSheet(); renderQueue(); };
+  });
+}
+function askCall(p) {
+  const l = D().leads.find(x => x['Lead ID'] === p.id); if (!l) return;
+  const opts = [['Meeting', 'Meeting set'], ['Replied', 'Interested, talk again'], ['NoAnswer', 'No answer'], ['Not interested', 'Not interested']];
+  sheet(`<h2 class="sheet-title">How did it go with ${esc(l.Name)}?</h2>
+    <div class="col gap10" style="margin-top:12px">${opts.map(([v, t]) => `<button class="btn ghost block" data-v="${v}">${t}</button>`).join('')}</div>
+    <label class="flabel" for="cn">Note (optional)</label><input class="inp" id="cn" placeholder="e.g. send towel samples Monday">`, (s) => {
+    $$('[data-v]', s).forEach(b => b.onclick = () => {
+      const v = b.dataset.v, note = $('#cn', s).value.trim(), t = todayIST();
+      const set = v === 'NoAnswer' ? { Status: 'Contacted', 'Last contact': t, 'Next follow-up': addDays(t, 1) }
+        : v === 'Meeting' ? { Status: 'Meeting', 'Last contact': t, 'Next follow-up': addDays(t, 3) }
+        : v === 'Replied' ? { Status: 'Replied', 'Last contact': t, 'Next follow-up': addDays(t, 3) }
+        : { Status: 'Not interested', 'Last contact': t, 'Next follow-up': '' };
+      saveLead(p.id, set, ['Called: ' + b.textContent, note].filter(Boolean).join(' — ')); closeSheet(); toast('Logged');
+    });
+  });
+}
+function copy(t) { try { navigator.clipboard.writeText(t); } catch (e) {} }
+$('#qFilters').addEventListener('click', (e) => { const b = e.target.closest('[data-f]'); if (!b) return; qFilter = b.dataset.f; renderQueue(); });
+$('#refresh').addEventListener('click', () => load(true));
+
+/* pull to refresh on queue */
+(() => {
+  const sc = $('#s-queue'); let y0 = null, dy = 0;
+  sc.addEventListener('touchstart', (e) => { if (sc.scrollTop <= 0 && !e.target.closest('.deck')) { y0 = e.touches[0].clientY; dy = 0; } }, { passive: true });
+  sc.addEventListener('touchmove', (e) => { if (y0 == null) return; dy = e.touches[0].clientY - y0; const p = $('#ptr'); if (dy > 0) { p.style.opacity = Math.min(1, dy / 80); p.style.transform = `translateY(${Math.min(dy, 90) - 40}px) rotate(${dy * 3}deg)`; } }, { passive: true });
+  sc.addEventListener('touchend', (e) => {
+    if (y0 == null) return; const p = $('#ptr'); p.style.opacity = ''; p.style.transform = '';
+    if (dy > 80) { const r = document.createElement('div'); r.className = 'rip'; r.style.left = (innerWidth / 2 - 60) + 'px'; r.style.top = '40px'; document.body.appendChild(r); setTimeout(() => r.remove(), 800); hap('hold'); load(true); }
+    y0 = null;
+  });
+})();
+
+/* ---------- navigation ---------- */
+let current = 'queue';
+function go(name) {
+  closeFan(); current = name;
+  $$('.screen').forEach(s => s.classList.toggle('on', s.id === 's-' + name));
+  $('#dock').classList.toggle('hide', name === 'quote');
+  $$('.dockbtn').forEach(b => b.classList.toggle('on', b.dataset.go === name));
+  if (name === 'leads') renderLeads(); if (name === 'jobs') renderJobs(); if (name === 'queue') renderQueue();
+  history.replaceState(null, '', '#' + name);
+}
+document.addEventListener('click', (e) => { const g = e.target.closest('[data-go]'); if (g) go(g.dataset.go); });
+window.addEventListener('popstate', () => { if ($('#sheet').classList.contains('on')) closeSheet(); });
+
+/* ---------- territory ---------- */
+const HOME = [12.2958, 76.6394];
+const TOWNS = { mysore: [12.2958, 76.6394], mysuru: [12.2958, 76.6394], mandya: [12.5223, 76.8970], madikeri: [12.4244, 75.7382], coorg: [12.4244, 75.7382], kodagu: [12.4244, 75.7382], virajpet: [12.1966, 75.8051], gonikoppa: [12.1849, 75.9298], gonikoppal: [12.1849, 75.9298], hunsur: [12.3089, 76.2904], kushalnagar: [12.4579, 75.9599], somwarpet: [12.5970, 75.8495], nanjangud: [12.1197, 76.6829], chamarajanagar: [11.9261, 76.9437], srirangapatna: [12.4140, 76.6915], 'kr nagar': [12.4400, 76.3800], 'k r nagar': [12.4400, 76.3800], 'krishnarajanagara': [12.4400, 76.3800], hassan: [13.0072, 76.0962], bengaluru: [12.9716, 77.5946], bangalore: [12.9716, 77.5946], 'h d kote': [12.0886, 76.3291], 'hd kote': [12.0886, 76.3291], kollegal: [12.1537, 77.1101], periyapatna: [12.3360, 76.1000], 'tirumakudalu narasipura': [12.2108, 76.9041], 't narasipura': [12.2108, 76.9041], bylakuppe: [12.4300, 76.0800], pandavapura: [12.4980, 76.6740], 'k r pet': [12.6560, 76.4840], maddur: [12.5840, 77.0440], malavalli: [12.3850, 77.0610] };
+const SHORT = { mysore: 'MYS', mysuru: 'MYS', mandya: 'MND', madikeri: 'MDK', virajpet: 'VRJ', gonikoppa: 'GNK', hunsur: 'HSR', kushalnagar: 'KSN', somwarpet: 'SMP', nanjangud: 'NJD', chamarajanagar: 'CRN', srirangapatna: 'SRP', hassan: 'HSN', bengaluru: 'BLR', bangalore: 'BLR' };
+const townKey = (t) => String(t || 'Unknown').trim().toLowerCase().replace(/\s+/g, ' ');
+const townName = (k) => k === 'mysore' ? 'Mysuru' : k.replace(/\b\w/g, c => c.toUpperCase());
+let leadView = 'radar', selTown = null, leadSearch = '', leadScore = 'All';
+const STATUS = ['New', 'Contacted', 'Replied', 'Meeting', 'Won', 'Lost', 'Not interested', 'Watching'];
+function scoreColor(s) { return s === 'Hot' ? 'var(--pink)' : s === 'Warm' ? 'var(--amber)' : 'var(--cyan)'; }
+const scoreRank = (s) => ({ Hot: 0, Warm: 1, Watch: 2 }[s] ?? 3);
+function leadRow(l) {
+  return `<button class="lrow" data-lead="${esc(l['Lead ID'])}"><span class="sdot" style="background:${scoreColor(l.Score)}"></span><div class="col" style="flex:1;min-width:0"><span style="font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(l.Name)}</span><span class="small muted">${esc([l.Type, l.Town, l.Status || 'New'].filter(Boolean).join(' · '))}</span></div>${phoneOf(l.Phone) ? `<span class="wa" data-wa="${esc(l['Lead ID'])}">${ICON.wa}</span>` : ''}</button>`;
+}
+function renderLeads() {
+  $$('#leadSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === leadView));
+  const leads = D().leads.filter(l => l.Type !== 'Competitor'), v = $('#leadView');
+  if (leadView === 'radar') {
+    const by = {}; leads.forEach(l => { const k = townKey(l.Town); (by[k] = by[k] || []).push(l); });
+    const keys = Object.keys(by).sort((a, b) => by[b].length - by[a].length);
+    if (!selTown || !by[selTown]) selTown = keys[0];
+    const blips = keys.map((k, i) => {
+      const c = TOWNS[k]; let x, y;
+      if (c) { const dx = (c[1] - HOME[1]) * 111 * Math.cos(HOME[0] * Math.PI / 180), dy = (c[0] - HOME[0]) * 111; const dist = Math.hypot(dx, dy); const r = Math.min(1, Math.sqrt(dist / 140)) * 44; const ang = Math.atan2(dy, dx); x = 50 + r * Math.cos(ang); y = 50 - r * Math.sin(ang); }
+      else { const ang = (i * 137.5) * Math.PI / 180; x = 50 + 40 * Math.cos(ang); y = 50 - 40 * Math.sin(ang); }
+      const n = by[k].length, hot = by[k].some(l => l.Score === 'Hot'), size = Math.min(26, 8 + n * 2.4);
+      const center = c && c === TOWNS.mysore;
+      return `<button class="blip ${k === selTown ? 'sel' : ''}" data-town="${esc(k)}" style="left:${x}%;top:${y}%"><i style="width:${size}px;height:${size}px;background:${center ? 'var(--holo)' : hot ? 'var(--pink)' : 'var(--cyan)'};${center ? 'background-size:200% 100%;' : ''}box-shadow:0 0 ${size}px ${hot ? 'rgba(255,46,147,.7)' : 'rgba(92,242,255,.6)'}"></i><b>${esc(SHORT[k] || townName(k).slice(0, 3).toUpperCase())} ${n}</b></button>`;
+    }).join('');
+    const list = (by[selTown] || []).slice().sort((a, b) => scoreRank(a.Score) - scoreRank(b.Score));
+    v.innerHTML = `<div class="radar"><div class="ring" style="inset:16%"></div><div class="ring" style="inset:33%"></div><div class="sw"></div>${blips}</div>
+      <div class="card" style="padding:12px 14px"><div class="between"><span class="grot" style="font-size:22px;font-weight:700">${esc(townName(selTown || ''))} <span class="muted" style="font-weight:500">· ${list.length}</span></span><span class="lbl">HOT FIRST</span></div>${list.map(leadRow).join('') || '<div class="empty">No leads yet</div>'}</div>`;
+  } else if (leadView === 'list') {
+    const q = leadSearch.toLowerCase();
+    const list = leads.filter(l => (leadScore === 'All' || l.Score === leadScore || l.Status === leadScore) && (!q || [l.Name, l.Town, l.Type, l.Phone].join(' ').toLowerCase().includes(q)))
+      .sort((a, b) => scoreRank(a.Score) - scoreRank(b.Score) || String(b['Date found']).localeCompare(String(a['Date found'])));
+    v.innerHTML = `<input class="inp" id="lsearch" placeholder="Search name, town, phone" value="${esc(leadSearch)}" style="margin-top:14px">
+      <div class="chips" style="margin-top:10px">${['All', 'Hot', 'Warm', 'Watch', 'Contacted', 'Meeting'].map(s => `<button class="chip ${leadScore === s ? 'on' : ''}" data-score="${s}">${s}</button>`).join('')}</div>
+      <div class="col" style="margin-top:6px">${list.map(leadRow).join('') || '<div class="empty">No leads match</div>'}</div>`;
+    const inp = $('#lsearch'); inp.oninput = () => { leadSearch = inp.value; const pos = inp.selectionStart; renderLeads(); const n = $('#lsearch'); n.focus(); n.setSelectionRange(pos, pos); };
+  } else {
+    const counts = STATUS.map(s => [s, leads.filter(l => (l.Status || 'New') === s).length]); const max = Math.max(1, ...counts.map(c => c[1]));
+    const won = counts.find(c => c[0] === 'Won')[1], contacted = leads.filter(l => (l.Status || 'New') !== 'New').length;
+    v.innerHTML = `<div class="col gap10" style="margin-top:18px">${counts.map(([s, n]) => `<div class="col gap6"><div class="between small"><span>${s}</span><span class="mono">${n}</span></div><div style="background:rgba(234,240,255,.06);border-radius:9px"><div class="fbar" style="width:${n ? Math.max(4, n / max * 100) : 0}%"></div></div></div>`).join('')}</div>
+      <div class="card" style="margin-top:18px"><span class="lbl">Where it's stuck</span><p style="margin:8px 0 0;font-size:14px;line-height:1.5">${contacted === 0 ? `None of your ${leads.length} leads has been contacted yet. Clearing the queue each morning moves them forward.` : `${contacted} of ${leads.length} leads contacted, ${won} won.`}</p></div>`;
+  }
+}
+$('#leadSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-v]'); if (b) { leadView = b.dataset.v; renderLeads(); } });
+$('#leadView').addEventListener('click', (e) => {
+  const t = e.target.closest('[data-town]'); if (t) { selTown = t.dataset.town; hap('soft'); renderLeads(); return; }
+  const s = e.target.closest('[data-score]'); if (s) { leadScore = s.dataset.score; renderLeads(); return; }
+  const w = e.target.closest('[data-wa]'); if (w) { e.stopPropagation(); quickWA(w.dataset.wa); return; }
+  const l = e.target.closest('[data-lead]'); if (l) openLead(l.dataset.lead);
+});
+function quickWA(id) {
+  const l = D().leads.find(x => x['Lead ID'] === id); if (!l) return; const ph = phoneOf(l.Phone); if (!ph) return;
+  const isFu = l.Status === 'Contacted' || l.Status === 'Replied';
+  pendingReturn = { kind: 'sent', id, fu: isFu };
+  window.open('https://wa.me/' + ph + '?text=' + encodeURIComponent(isFu ? followText(l) : (l['Pitch (WhatsApp draft)'] || '')), '_blank');
+}
+function openLead(id) {
+  const l = D().leads.find(x => x['Lead ID'] === id); if (!l) return; const ph = phoneOf(l.Phone);
+  const web = l['Website / Instagram'];
+  sheet(`<div class="between"><span class="pill ${l.Score === 'Hot' ? 'p-hot' : l.Score === 'Warm' ? 'p-warm' : 'p-cool'}">${esc((l.Score || '').toUpperCase())} · ${esc(l['Lead ID'])}</span><span class="small muted">${esc(l.Source || '')}</span></div>
+    <h2 class="sheet-title" style="margin-top:10px">${esc(l.Name)}</h2><p class="muted small" style="margin:0">${esc([l.Type, l.Town].filter(Boolean).join(' · '))}</p>
+    ${l['Why it is a lead'] ? `<p style="font-size:14px;line-height:1.5">${esc(l['Why it is a lead'])}</p>` : ''}
+    <div class="grid3" style="margin-top:12px">
+      <button class="btn green" id="lWA" ${ph ? '' : 'disabled'}>${ICON.wa}</button>
+      <button class="btn cyan" id="lCall" ${ph ? '' : 'disabled'}>${ICON.call}</button>
+      <button class="btn ghost" id="lQuote">Quote</button>
+    </div>
+    <div class="kv" style="margin-top:16px">
+      ${l.Phone ? `<span>PHONE</span><span>${esc(l.Phone)}</span>` : ''}${l.Email ? `<span>EMAIL</span><span>${esc(l.Email)}</span>` : ''}
+      ${web ? `<span>WEB / IG</span><span><a href="${esc(/^https?:/.test(web) ? web : (web.startsWith('@') ? 'https://instagram.com/' + web.slice(1) : 'https://' + web))}" target="_blank" rel="noopener">${esc(web)}</a></span>` : ''}
+      <span>FOUND</span><span>${esc(fmtDay(l['Date found']))}</span>${l['Last contact'] ? `<span>LAST CONTACT</span><span>${esc(fmtDay(l['Last contact']))}</span>` : ''}
+    </div>
+    <div class="grid2"><div><label class="flabel" for="lSt">Status</label><select class="inp" id="lSt">${STATUS.map(s => `<option ${s === (l.Status || 'New') ? 'selected' : ''}>${s}</option>`).join('')}</select></div>
+    <div><label class="flabel" for="lFu">Next follow-up</label><input class="inp" type="date" id="lFu" value="${esc(parseDay(l['Next follow-up']))}"></div></div>
+    <label class="flabel" for="lPitch">WhatsApp pitch</label><textarea class="inp" id="lPitch">${esc(l['Pitch (WhatsApp draft)'] || '')}</textarea>
+    <label class="flabel" for="lNote">Add a note</label><input class="inp" id="lNote" placeholder="e.g. owner back on Monday">
+    ${l.Notes ? `<p class="small muted" style="white-space:pre-wrap;margin-top:10px">${esc(l.Notes)}</p>` : ''}
+    <button class="btn primary block" id="lSave" style="margin-top:16px">Save</button>`, (s) => {
+    $('#lWA', s).onclick = () => { const text = $('#lPitch', s).value; pendingReturn = { kind: 'sent', id, fu: l.Status === 'Contacted' }; closeSheet(); window.open('https://wa.me/' + ph + '?text=' + encodeURIComponent(text), '_blank'); };
+    $('#lCall', s).onclick = () => { pendingReturn = { kind: 'call', id }; closeSheet(); location.href = 'tel:+' + ph; };
+    $('#lQuote', s).onclick = () => { closeSheet(); openQuote({ customer: l.Name, phone: l.Phone || '' }); };
+    $('#lSave', s).onclick = () => {
+      const set = {}; const st = $('#lSt', s).value, fu = $('#lFu', s).value, pi = $('#lPitch', s).value, note = $('#lNote', s).value.trim();
+      if (st !== (l.Status || 'New')) { set.Status = st; if (st !== 'New' && !l['Last contact']) set['Last contact'] = todayIST(); }
+      if (fu !== parseDay(l['Next follow-up'])) set['Next follow-up'] = fu;
+      if (pi !== (l['Pitch (WhatsApp draft)'] || '')) set['Pitch (WhatsApp draft)'] = pi;
+      if (!Object.keys(set).length && !note) { closeSheet(); return; }
+      saveLead(id, set, note); closeSheet(); toast('Saved'); if (current === 'leads') renderLeads();
+    };
+  });
+}
+$('#addLeadBtn').addEventListener('click', () => formLead());
+function formLead(pre = {}) {
+  const code = uid('lead');
+  sheet(`<h2 class="sheet-title">Add a lead</h2>
+    <label class="flabel" for="fl-n">Name</label><input class="inp" id="fl-n" value="${esc(pre.name || '')}">
+    <div class="grid2"><div><label class="flabel" for="fl-t">Type</label><select class="inp" id="fl-t">${['Furniture store', 'Hotel', 'Hotel / resort', 'Homestay', 'Interior designer', 'Hospital', 'Builder', 'Retail customer', 'Other'].map(x => `<option>${x}</option>`).join('')}</select></div>
+    <div><label class="flabel" for="fl-w">Town</label><input class="inp" id="fl-w" value="${esc(pre.town || '')}"></div></div>
+    <div class="grid2"><div><label class="flabel" for="fl-p">Phone</label><input class="inp" id="fl-p" inputmode="tel" value="${esc(pre.phone || '')}"></div>
+    <div><label class="flabel" for="fl-s">Score</label><select class="inp" id="fl-s"><option>Hot</option><option selected>Warm</option><option>Watch</option></select></div></div>
+    <label class="flabel" for="fl-y">Why it's a lead</label><input class="inp" id="fl-y" placeholder="e.g. opening a 12-room homestay in Dec">
+    <p class="small muted">A WhatsApp pitch is written for you from the type.</p>
+    <button class="btn primary block" id="fl-go" style="margin-top:8px">Add lead</button>`, (s) => {
+    $('#fl-go', s).onclick = () => {
+      const d = { code, name: $('#fl-n', s).value.trim(), type: $('#fl-t', s).value, town: $('#fl-w', s).value.trim(), phone: $('#fl-p', s).value.trim(), score: $('#fl-s', s).value, why: $('#fl-y', s).value.trim(), source: 'Added in app' };
+      if (!d.name) { toast('Add a name', 'err'); return; }
+      D().leads.push({ 'Lead ID': '…', 'Date found': todayIST(), Name: d.name, Type: d.type, Town: d.town, Score: d.score, Phone: d.phone, Status: 'New', 'Why it is a lead': d.why, 'Save code': code });
+      LS.set('data', S.data); send('leadAdd', d, 'lead ' + d.name).then(() => setTimeout(load, 4000)); closeSheet(); toast('Lead added'); renderAll();
+    };
+  });
+}
+
+/* ---------- jobs ---------- */
+function renderJobs() {
+  const data = D(), m = mode(), wh = data.settings.working_hours || 'Store';
+  const nowT = pad(ist().getHours()) + ':' + pad(ist().getMinutes());
+  const runs = todaysRuns(); let nowPlaced = false; let nextMarked = false;
+  const tl = runs.map(r => {
+    let pre = ''; if (!nowPlaced && r.t > nowT) { nowPlaced = true; pre = `<div class="nowline"><span class="mono" style="width:46px;font-size:11px;color:var(--pinkSoft)">NOW</span><span class="dot" style="background:var(--pink);animation:ring 1.6s infinite"></span><i></i></div>`; }
+    const past = r.t <= nowT, isNext = !past && !r.skip && !nextMarked; if (isNext) nextMarked = true;
+    const color = r.where === 'CLOUD' ? '#C9B6FF' : 'var(--cyan)';
+    return pre + `<div class="tl ${past || r.skip ? 'past' : ''} ${isNext ? 'next' : ''}"><span class="t">${r.t}</span><span class="dot" style="${r.skip ? 'border:1.5px dashed var(--muted)' : 'background:' + color}"></span><span style="flex:1;font-size:14px;${isNext ? 'font-weight:600' : ''}">${esc(r.label)}${r.skip ? ' <span class="muted">· will skip</span>' : r.maybe ? ' <span class="muted">· if store missed</span>' : ''}</span><span class="mono" style="font-size:10px;color:${r.where === 'CLOUD' ? 'var(--muted)' : 'var(--cyan)'}">${r.where}</span></div>`;
+  }).join('') + (nowPlaced ? '' : `<div class="nowline"><span class="mono" style="width:46px;font-size:11px;color:var(--pinkSoft)">NOW</span><span class="dot" style="background:var(--pink)"></span><i></i></div>`);
+  const ready = data.requests.filter(r => r.Status === 'Ready to bill');
+  const lastBy = {}; data.log.forEach(g => { lastBy[g.Agent] = g; });
+  const st = seen('store_last_seen'), lp = seen('laptop_last_seen');
+  const reqs = data.requests.slice().reverse().slice(0, 12);
+  const pillFor = (s) => s === 'Done' ? 'p-ok' : s === 'Failed' ? 'p-warm' : s === 'Ready to bill' ? 'p-hot' : 'p-cool';
+  $('#jobsView').innerHTML = `
+    <div class="col gap6"><span class="lbl">Computer jobs run on</span>
+      <div class="seg holo-on" id="pcSeg" style="grid-template-columns:repeat(3,1fr)">${['Store', 'Laptop', 'Auto'].map(x => `<button data-pc="${x}" class="${m === x ? 'on' : ''}" style="height:46px;font-size:14px">${x}</button>`).join('')}</div>
+      <span class="small muted">${m === 'Auto' ? 'Store computer first; the laptop covers anything it missed.' : m === 'Laptop' ? 'Laptop does the browser jobs in the evening.' : 'Store computer does them in store hours; laptop copies stand by.'}</span></div>
+    <div class="grid2">
+      <div class="card" style="border-color:${m !== 'Laptop' ? 'rgba(59,255,158,.4)' : 'var(--line)'}"><span class="row strip" style="gap:6px;font-size:10px;color:${m !== 'Laptop' ? 'var(--green)' : 'var(--muted)'}"><span class="dot ${m !== 'Laptop' ? 'live' : ''}" style="${m !== 'Laptop' ? '' : 'background:var(--dim)'}"></span>STORE PC</span><div style="font-weight:700;margin-top:6px">${m === 'Laptop' ? 'Standing by' : 'In charge'}</div><div class="small muted">${st ? 'seen ' + esc(st) : 'no report yet'}</div></div>
+      <div class="card" style="border-color:${m === 'Laptop' ? 'rgba(59,255,158,.4)' : 'var(--line)'}"><span class="row strip" style="gap:6px;font-size:10px;color:${m === 'Laptop' ? 'var(--green)' : 'var(--muted)'}"><span class="dot ${m === 'Laptop' ? 'live' : ''}" style="${m === 'Laptop' ? '' : 'background:var(--dim)'}"></span>LAPTOP</span><div style="font-weight:700;margin-top:6px">${m === 'Laptop' ? 'In charge' : m === 'Auto' ? 'Backup' : 'Standing by'}</div><div class="small muted">${lp ? 'seen ' + esc(lp) : 'no report yet'}</div></div>
+    </div>
+    <div style="border-radius:22px;padding:2px" class="holo"><div style="border-radius:20px;background:var(--panel);padding:14px 16px" class="row">
+      <div class="col" style="flex:1"><span class="lbl">Run by hand</span><span style="font-weight:700;font-size:15px">UPI bills · ${ready.length ? ready.length + ' ready' : 'nothing ready'}</span><span class="small muted">${ready.length ? esc(ready.map(r => (r['Result note'] || '').split('|')[0].replace('Date:', '').trim()).join(', ')) : 'Send them with Capture → UPI bills'}</span></div>
+      <a class="btn ${ready.length ? 'green' : 'ghost'}" style="height:44px;font-size:13px;text-decoration:none" href="https://claude.ai/" target="_blank" rel="noopener">Open Claude</a></div></div>
+    <div class="col"><span class="lbl" style="margin-bottom:4px">Today · ${ist().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</span>${tl}</div>
+    <div class="col"><span class="lbl">Working hours for requests</span><div class="seg" id="whSeg" style="grid-template-columns:repeat(2,1fr);margin-top:6px">${[['Store', 'Store 10–7'], ['Extended', 'Extended 7–11']].map(([k, t]) => `<button data-wh="${k}" class="${wh === k ? 'on' : ''}">${t}</button>`).join('')}</div></div>
+    <div class="col"><span class="lbl">My requests</span>${reqs.map(r => `<div class="req"><span class="pill ${pillFor(r.Status)}" style="flex-shrink:0">${esc((r.Status || '').toUpperCase())}</span><div class="col" style="flex:1;min-width:0"><span style="font-size:14px;font-weight:600">${esc(r.Summary || r.Type)}</span><span class="small muted">${esc(r.Type)} · ${esc(fmtDay(r.Created))}${r['Result note'] ? ' · ' + esc(String(r['Result note']).slice(0, 120)) : ''}</span>${r['Result link'] ? `<a class="small" href="${esc(r['Result link'])}" target="_blank" rel="noopener">Open result</a>` : ''}</div></div>`).join('') || '<div class="empty">No requests yet</div>'}</div>
+    <div class="col"><span class="lbl">Agent feed</span>${data.log.slice().reverse().slice(0, 14).map(g => `<div class="req"><span class="mono small" style="width:46px;flex-shrink:0;color:var(--muted)">${esc(fmtDay(g.Date))}</span><div class="col" style="flex:1"><span style="font-size:13px;font-weight:600">${esc(g.Agent)}</span><span class="small muted">${esc(String(g.Summary || '').slice(0, 220))}</span></div></div>`).join('') || '<div class="empty">No agent reports yet</div>'}</div>`;
+  $('#pcSeg').onclick = (e) => { const b = e.target.closest('[data-pc]'); if (!b) return; data.settings.working_computer = b.dataset.pc; LS.set('data', S.data); send('setting', { key: 'working_computer', value: b.dataset.pc }, 'computer switch'); hap('ok'); renderJobs(); renderQueue(); };
+  $('#whSeg').onclick = (e) => { const b = e.target.closest('[data-wh]'); if (!b) return; data.settings.working_hours = b.dataset.wh; LS.set('data', S.data); send('setting', { key: 'working_hours', value: b.dataset.wh }, 'working hours'); renderJobs(); };
+  const b = $('#jobsBadge'); b.style.display = ready.length ? 'flex' : 'none'; b.textContent = ready.length;
+}
+$('#settingsBtn').addEventListener('click', () => {
+  sheet(`<h2 class="sheet-title">App settings</h2>
+    <div class="between" style="margin-top:12px"><span>Buzz on taps</span><button class="chip ${LS.get('noHaptics', false) ? '' : 'on'}" id="hapT">${LS.get('noHaptics', false) ? 'Off' : 'On'}</button></div>
+    <div class="between" style="margin-top:12px"><span>Morning brief</span><button class="chip ${LS.get('noBrief', false) ? '' : 'on'}" id="brT">${LS.get('noBrief', false) ? 'Off' : 'Once a day'}</button></div>
+    <p class="small muted" style="margin-top:16px">Connected to ${esc(S.url ? S.url.slice(0, 48) + '…' : 'nothing')}<br>App ${VERSION}</p>
+    <button class="btn ghost block" id="reP">Change API URL or key</button>`, (s) => {
+    $('#hapT', s).onclick = () => { LS.set('noHaptics', !LS.get('noHaptics', false)); closeSheet(); };
+    $('#brT', s).onclick = () => { LS.set('noBrief', !LS.get('noBrief', false)); closeSheet(); };
+    $('#reP', s).onclick = () => { closeSheet(); showPair(); };
+  });
+});
+
+/* ---------- brief ---------- */
+let bIdx = 0, bTimer = null, bSlides = [], bPaused = false;
+function briefSlides() {
+  const d = D(), t = todayIST(), leads = d.leads.filter(l => l.Type !== 'Competitor');
+  const fresh = leads.filter(l => parseDay(l['Date found']) >= addDays(t, -3));
+  const towns = new Set(fresh.map(l => townKey(l.Town))).size;
+  const hot = leads.filter(l => l.Score === 'Hot' && (l.Status || 'New') === 'New').slice(0, 5);
+  const fus = leads.filter(l => (l.Status === 'Contacted' || l.Status === 'Replied') && parseDay(l['Next follow-up']) && parseDay(l['Next follow-up']) <= t);
+  const recent = d.log.filter(g => parseDay(g.Date) >= addDays(t, -1)).slice(-5).reverse();
+  const tenders = d.tenders.filter(x => x.Status === 'Open' && (!parseDay(x['Bid closing date']) || parseDay(x['Bid closing date']) >= t)).sort((a, b) => String(a['Bid closing date']).localeCompare(String(b['Bid closing date'])));
+  const reqs = d.requests.filter(r => ['Done', 'Ready to bill', 'Failed'].includes(r.Status) && parseDay(r.Finished || r.Created) >= addDays(t, -2));
+  const hr = ist().getHours(), greet = hr < 12 ? 'Morning' : hr < 17 ? 'Afternoon' : 'Evening';
+  const types = {}; fresh.forEach(l => { const k = /hotel|resort|homestay/i.test(l.Type) ? 'Hotels & stays' : /furniture|sofa/i.test(l.Type) ? 'Furniture stores' : 'Others'; types[k] = (types[k] || 0) + 1; });
+  const S1 = fresh.length
+    ? `<h1 class="bigline">${greet}, Dhruv. Your agents found <span class="holo-text">${fresh.length} lead${fresh.length > 1 ? 's' : ''}</span> across ${towns} town${towns > 1 ? 's' : ''}.</h1><div class="grid2">${Object.entries(types).map(([k, n]) => `<div class="card"><span class="lbl">${esc(k)}</span><div class="grot" style="font-size:30px;font-weight:700">${n}</div></div>`).join('')}</div>`
+    : `<h1 class="bigline">${greet}, Dhruv. <span class="holo-text">${leads.length} leads</span> in your territory.</h1><p class="muted">No new ones in the last 3 days.</p>`;
+  const S2 = `<span class="lbl" style="color:var(--pinkSoft)">${hot.length} hot · call first</span><div class="holocard holo">${hot.map(l => `<div class="between" style="font-size:15px;font-weight:600"><span>${esc(l.Name)}</span><span class="mono small">${esc((SHORT[townKey(l.Town)] || l.Town || '').toString().toUpperCase())}</span></div>`).join('') || '<span>No hot leads waiting. Nice.</span>'}</div>${fus.length ? `<p class="muted">${fus.length} follow-up${fus.length > 1 ? 's' : ''} due today.</p>` : ''}`;
+  const S3 = `<span class="lbl">What the agents did</span>${recent.map(g => `<div class="card"><span class="mono small" style="color:var(--cyan)">${esc(g.Agent.toUpperCase())}</span><p style="margin:6px 0 0;font-size:14px;line-height:1.45">${esc(String(g.Summary || '').slice(0, 170))}</p></div>`).join('') || '<p class="muted">No reports in the last day.</p>'}`;
+  const S4 = `<span class="lbl">Tenders</span>${tenders.slice(0, 3).map(x => `<div class="card"><div class="between"><span style="font-weight:700">${esc(x['Buyer / Department'])}</span><span class="pill p-cool">${esc(fmtDay(x['Bid closing date']))}</span></div><p class="small muted" style="margin:6px 0 0">${esc(x.Items || '')}</p></div>`).join('') || '<h1 class="bigline" style="font-size:28px">No open tenders right now.</h1><p class="muted">The Tender Watcher checks Tue, Thu and Sat.</p>'}`;
+  const S5 = `<span class="lbl">Your requests</span>${reqs.map(r => `<div class="card"><div class="between"><span style="font-weight:700">${esc(r.Summary || r.Type)}</span><span class="pill ${r.Status === 'Done' ? 'p-ok' : r.Status === 'Failed' ? 'p-warm' : 'p-hot'}">${esc(r.Status.toUpperCase())}</span></div>${r['Result note'] ? `<p class="small muted" style="margin:6px 0 0">${esc(String(r['Result note']).slice(0, 140))}</p>` : ''}</div>`).join('') || '<h1 class="bigline" style="font-size:28px">Nothing pending from you.</h1>'}`;
+  return [S1, S2, S3, S4, S5];
+}
+function maybeBrief() { if (!S.data || LS.get('noBrief', false) || LS.get('briefDay', '') === todayIST()) return; if (current !== 'queue' || $('#sheet').classList.contains('on')) return; openBrief(); }
+function openBrief() {
+  LS.set('briefDay', todayIST()); bSlides = briefSlides(); bIdx = 0;
+  const b = $('#brief'); b.classList.add('on');
+  b.innerHTML = `<div class="bars" style="grid-template-columns:repeat(${bSlides.length},1fr)">${bSlides.map(() => '<div class="bar"><i></i></div>').join('')}</div>
+    <div class="between strip" style="margin-top:14px"><span style="color:var(--cyan)">BRIEF · ${ist().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }).toUpperCase()}</span><button class="iconbtn" id="bX" aria-label="Close" style="width:36px;height:36px">${ICON.x}</button></div>
+    <div id="bBody" style="flex:1;display:flex;position:relative"></div>
+    <span class="mono small muted" style="text-align:center;margin-bottom:12px">tap → next · hold to pause</span>
+    <button class="btn primary block" id="bGo">Start my queue · ${buildQueue().length} actions</button>`;
+  $('#bX').onclick = closeBrief; $('#bGo').onclick = () => { closeBrief(); go('queue'); };
+  const body = $('#bBody'); let hold = null, held = false;
+  body.addEventListener('pointerdown', () => { held = false; hold = setTimeout(() => { held = true; bPaused = true; $$('.bar')[bIdx].classList.add('paused'); clearTimeout(bTimer); hap('hold'); }, 260); });
+  body.addEventListener('pointerup', (e) => { clearTimeout(hold); if (held) { bPaused = false; $$('.bar')[bIdx].classList.remove('paused'); bTimer = setTimeout(nextSlide, 3000); return; } const r = body.getBoundingClientRect(); if (e.clientX - r.left < r.width / 3) prevSlide(); else nextSlide(); });
+  showSlide();
+}
+function showSlide() {
+  clearTimeout(bTimer); const bars = $$('#brief .bar'); bars.forEach((b, i) => { b.className = 'bar' + (i < bIdx ? ' done' : i === bIdx ? ' now' : ''); });
+  $('#bBody').innerHTML = `<div class="slide">${bSlides[bIdx]}</div>`; hap('soft');
+  bTimer = setTimeout(nextSlide, 6000);
+}
+function nextSlide() { if (bIdx < bSlides.length - 1) { bIdx++; showSlide(); } else { clearTimeout(bTimer); $$('#brief .bar').forEach(b => b.className = 'bar done'); } }
+function prevSlide() { if (bIdx > 0) { bIdx--; showSlide(); } }
+function closeBrief() { clearTimeout(bTimer); $('#brief').classList.remove('on'); $('#brief').innerHTML = ''; }
+$('#openBrief').addEventListener('click', openBrief);
+
+/* ---------- capture fan ---------- */
+const FAN = [
+  { id: 'voice', label: 'Voice ask', icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>' },
+  { id: 'card', label: 'Card → lead', icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.8-1.5 1.8-2 3-2s2.2.5 3 2M15 10h3M15 13h3"/></svg>' },
+  { id: 'upi', label: 'UPI bills', icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>' },
+  { id: 'product', label: 'Product', icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' },
+  { id: 'quote', label: 'Quote', icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M8 15h2M12 15h2M16 11v4"/></svg>' }
+];
+function suggestion() {
+  const h = ist().getHours(), m = ist().getMinutes(), t = h * 60 + m;
+  if (t >= 18 * 60 + 30 || t < 3 * 60) return { id: 'upi', title: 'Store\'s closed — send today\'s UPI list?', sub: 'Snap the sales book page. Claude reads the amounts.' };
+  if (t >= 10 * 60 && t < 13 * 60) return { id: 'product', title: 'New stock in? Add product photos.', sub: 'The Catalogue Agent writes the entry for you.' };
+  return { id: 'quote', title: 'Customer at the counter? Make a quote.', sub: 'Mayur Tex format, ready to send on WhatsApp.' };
+}
+function openFan(holdMode) {
+  const f = $('#fan'); const sug = suggestion();
+  const safeB = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-b')) || 0; const cx = innerWidth / 2, by = innerHeight - safeB - 128, R = Math.min(152, innerWidth * .39);
+  const angles = [160, 125, 90, 55, 20];
+  f.innerHTML = `<div class="fansug" style="animation:enter .4s both"><span class="lbl" style="color:var(--cyan)">Suggested now · ${pad(ist().getHours())}:${pad(ist().getMinutes())}</span>
+    <button class="card row" data-cap="${sug.id}" style="margin-top:10px;width:100%;text-align:left;border-color:rgba(92,242,255,.35);gap:14px"><span class="holo" style="width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--bg);flex-shrink:0">${FAN.find(x => x.id === sug.id).icon}</span><span class="col"><b style="font-size:15px">${esc(sug.title)}</b><span class="small muted">${esc(sug.sub)}</span></span></button>
+    <div class="fanmore"><button class="chip" data-cap="lead">Add lead by hand</button><button class="chip" data-cap="vyapar">Vyapar export</button><button class="chip" data-cap="ask">Type a request</button></div>
+    <p class="mono small muted" style="text-align:center;margin-top:14px">${holdMode ? 'slide to an option · let go to open' : 'tap an option'}</p></div>
+    ${FAN.map((it, i) => { const a = angles[i] * Math.PI / 180, x = cx + R * Math.cos(a), y = by - R * Math.sin(a); return `<div class="fanitem ${it.id === 'upi' ? 'main' : ''}" data-cap="${it.id}" style="left:${x}px;top:${y - 37}px;animation-delay:${i * .04}s"><button aria-label="${esc(it.label)}">${it.icon}</button><span>${esc(it.label)}</span></div>`; }).join('')}
+`;
+  f.classList.add('on'); $('#capBtn').classList.add('open'); $('#capBtn').innerHTML = CAP_X; hap('hold');
+}
+const CAP_ICON = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+const CAP_X = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+function closeFan() { $('#fan').classList.remove('on'); $('#capBtn').classList.remove('open'); $('#capBtn').innerHTML = CAP_ICON; $('#fan').innerHTML = ''; }
+$('#fan').addEventListener('click', (e) => { const c = e.target.closest('[data-cap]'); if (c) { closeFan(); capture(c.dataset.cap); } else if (e.target.id === 'fan') closeFan(); });
+(() => {
+  const btn = $('#capBtn'); let t = null, holding = false, startTime = 0, hover = null;
+  btn.addEventListener('pointerdown', (e) => {
+    startTime = Date.now(); holding = false; btn.setPointerCapture(e.pointerId);
+    if ($('#fan').classList.contains('on')) return;
+    t = setTimeout(() => { holding = true; openFan(true); }, 280);
+  });
+  btn.addEventListener('pointermove', (e) => {
+    if (!holding) return; const el = document.elementFromPoint(e.clientX, e.clientY); const it = el && el.closest('.fanitem');
+    if (it !== hover) { if (hover) hover.classList.remove('hover'); hover = it; if (it) { it.classList.add('hover'); hap('soft'); } }
+  });
+  btn.addEventListener('pointerup', () => {
+    clearTimeout(t);
+    if (holding) { holding = false; if (hover) { const id = hover.dataset.cap; hover = null; closeFan(); capture(id); } return; }
+    if (Date.now() - startTime < 280) { if ($('#fan').classList.contains('on')) closeFan(); else openFan(false); }
+  });
+  btn.addEventListener('pointercancel', () => { clearTimeout(t); holding = false; });
+})();
+function capture(id) {
+  if (id === 'upi') return formUPI(); if (id === 'product') return formProduct(); if (id === 'quote') return openQuote({});
+  if (id === 'card') return formCard(); if (id === 'voice') return formAsk(true); if (id === 'ask') return formAsk(false);
+  if (id === 'lead') return formLead(); if (id === 'vyapar') return formVyapar();
+}
+
+/* photos */
+async function compress(file, max = 1600) {
+  const img = await new Promise((res, rej) => { const u = URL.createObjectURL(file); const i = new Image(); i.onload = () => { URL.revokeObjectURL(u); res(i); }; i.onerror = rej; i.src = u; });
+  const s = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  const url = c.toDataURL('image/jpeg', .82); return { name: (file.name || 'photo').replace(/\.\w+$/, '') + '.jpg', mime: 'image/jpeg', b64: url.split(',')[1], preview: url };
+}
+const fileToB64 = (file) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(file); });
+function photoPicker(s, key) {
+  const box = $('#' + key + '-box', s); const files = [];
+  const add = async (list) => { for (const f of list) { try { const c = await compress(f); files.push(c); box.querySelector('.thumbs').insertAdjacentHTML('beforeend', `<img src="${c.preview}" alt="">`); } catch (e) { toast('Couldn\'t read that photo', 'err'); } } hap('ok'); };
+  $('#' + key + '-cam', s).onchange = (e) => add([...e.target.files]); $('#' + key + '-gal', s).onchange = (e) => add([...e.target.files]);
+  return files;
+}
+const pickerHTML = (key, label) => `<label class="flabel">${label}</label><div id="${key}-box"><div class="grid2"><label class="btn cyan" style="cursor:pointer">Camera<input type="file" accept="image/*" capture="environment" id="${key}-cam" hidden></label><label class="btn ghost" style="cursor:pointer">Gallery<input type="file" accept="image/*" multiple id="${key}-gal" hidden></label></div><div class="thumbs"></div></div>`;
+const stripPreview = (fs) => fs.map(f => ({ name: f.name, mime: f.mime, b64: f.b64 }));
+
+function formUPI() {
+  const code = uid('upi');
+  sheet(`<h2 class="sheet-title">UPI bills</h2><p class="muted small" style="margin:0">Claude reads the amounts within the hour and puts them in your queue as “Ready to bill”. Then run UPI Bills on the Vyapar computer.</p>
+    <label class="flabel" for="u-d">Date of the payments</label><input class="inp" type="date" id="u-d" value="${todayIST()}">
+    ${pickerHTML('u', 'Photos: sales book page or PhonePe screenshots')}
+    <label class="flabel" for="u-a">Or type the amounts</label><textarea class="inp" id="u-a" placeholder="e.g. 1250, 780, 2400" inputmode="decimal" style="min-height:70px"></textarea>
+    <button class="btn primary block" id="u-go" style="margin-top:16px">Send to Claude</button>`, (s) => {
+    const files = photoPicker(s, 'u');
+    $('#u-go', s).onclick = () => {
+      const dt = $('#u-d', s).value, amt = $('#u-a', s).value.trim();
+      if (!files.length && !amt) { toast('Add a photo or type the amounts', 'err'); return; }
+      const details = 'Date: ' + dt + (amt ? '\nAmounts typed: ' + amt : '') + (files.length ? '\nPhotos: ' + files.length : '');
+      send('request', { code, type: 'UPI bills', summary: 'UPI bills for ' + dt, details, files: stripPreview(files) }, 'UPI bills');
+      D().requests.push({ 'Request ID': code, Created: nowIST(), Type: 'UPI bills', Summary: 'UPI bills for ' + dt, Status: 'Waiting' }); LS.set('data', S.data);
+      closeSheet(); toast('Sent — Claude will read the amounts');
+    };
+  });
+}
+const CATS = ['Bedsheets', 'Comforters & Blankets', 'Pillows & Cushions', 'Cushion Covers', 'Towels & Bath', 'Carpets & Rugs', 'Doormats', 'Sofa Covers', 'Curtains', 'Table Covers', 'Ceramics', 'Hotel Linen', 'Other'];
+function formProduct() {
+  const code = uid('prod');
+  sheet(`<h2 class="sheet-title">Add a product</h2>
+    ${pickerHTML('p', 'Photos')}
+    <label class="flabel" for="p-c">Category</label><select class="inp" id="p-c">${CATS.map(c => `<option>${c}</option>`).join('')}</select>
+    <label class="flabel" for="p-n">Name / design</label><input class="inp" id="p-n" placeholder="e.g. Amore floral, maroon">
+    <div class="grid2"><div><label class="flabel" for="p-s">Size</label><input class="inp" id="p-s" placeholder="108x108"></div><div><label class="flabel" for="p-p">Price ₹</label><input class="inp" id="p-p" inputmode="decimal"></div></div>
+    <div class="grid2"><div><label class="flabel" for="p-m">Material</label><input class="inp" id="p-m"></div><div><label class="flabel" for="p-v">Vyapar code</label><input class="inp" id="p-v"></div></div>
+    <label class="flabel" for="p-o">Notes</label><input class="inp" id="p-o">
+    <p class="small muted">The Catalogue Agent turns this into a catalogue entry on its next run.</p>
+    <button class="btn primary block" id="p-go">Save product</button>`, (s) => {
+    const files = photoPicker(s, 'p');
+    $('#p-go', s).onclick = () => {
+      if (!files.length) { toast('Add at least one photo', 'err'); return; }
+      const f = { cat: $('#p-c', s).value, name: $('#p-n', s).value.trim(), size: $('#p-s', s).value.trim(), price: $('#p-p', s).value.trim(), mat: $('#p-m', s).value.trim(), code: $('#p-v', s).value.trim(), notes: $('#p-o', s).value.trim() };
+      const notes = ['Save code: ' + code, 'Category: ' + f.cat, f.name && 'Name/design: ' + f.name, f.size && 'Size: ' + f.size, f.price && 'Price: ' + f.price, f.mat && 'Material: ' + f.mat, f.code && 'Vyapar item code: ' + f.code, f.notes && 'Notes: ' + f.notes].filter(Boolean).join('\n');
+      send('product', { code, label: f.name || f.cat, notes, files: stripPreview(files) }, 'product'); closeSheet(); toast('Product saved to the Catalogue Inbox');
+    };
+  });
+}
+function formCard() {
+  const code = uid('card');
+  sheet(`<h2 class="sheet-title">Visiting card → lead</h2><p class="muted small" style="margin:0">Snap the card (front, and back if it has details). Claude adds the lead with a pitch within the hour.</p>
+    ${pickerHTML('c', 'Card photo')}
+    <div class="grid2"><div><label class="flabel" for="c-s">Score</label><select class="inp" id="c-s"><option>Hot</option><option selected>Warm</option><option>Watch</option></select></div><div><label class="flabel" for="c-w">Where you met</label><input class="inp" id="c-w" placeholder="walked in"></div></div>
+    <label class="flabel" for="c-n">Note</label><input class="inp" id="c-n" placeholder="e.g. needs 40 bedsheet sets for a new resort">
+    <button class="btn primary block" id="c-go" style="margin-top:16px">Send</button>`, (s) => {
+    const files = photoPicker(s, 'c');
+    $('#c-go', s).onclick = () => {
+      if (!files.length) { toast('Add the card photo', 'err'); return; }
+      const details = ['Score: ' + $('#c-s', s).value, $('#c-w', s).value && 'Met: ' + $('#c-w', s).value, $('#c-n', s).value && 'Note: ' + $('#c-n', s).value].filter(Boolean).join('\n');
+      send('request', { code, type: 'Card to lead', summary: 'Visiting card' + ($('#c-n', s).value ? ' – ' + $('#c-n', s).value.slice(0, 60) : ''), details, files: stripPreview(files) }, 'card'); closeSheet(); toast('Card sent');
+    };
+  });
+}
+function formAsk(voice) {
+  const code = uid('req');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  sheet(`<h2 class="sheet-title">${voice ? 'Voice ask' : 'New request'}</h2>
+    ${voice && SR ? `<button class="btn cyan block" id="a-mic" style="height:64px;margin-top:8px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span id="a-ml">Hold to talk</span></button>` : voice ? '<p class="small muted">Voice isn\'t available in this browser; type instead.</p>' : ''}
+    <label class="flabel" for="a-t">What do you need?</label><textarea class="inp" id="a-t" placeholder="e.g. find homestays in Somwarpet that opened this year"></textarea>
+    <label class="flabel" for="a-y">Type</label><select class="inp" id="a-y">${['Lead hunt', 'Research', 'Catalogue PDF', 'Catafy upload', 'Other'].map(x => `<option>${x}</option>`).join('')}</select>
+    <p class="small muted">The Request Runner picks it up at the next hourly check and tells you when it's done.</p>
+    <button class="btn primary block" id="a-go">Send</button>`, (s) => {
+    const ta = $('#a-t', s), ty = $('#a-y', s);
+    const guess = () => { const v = ta.value.toLowerCase(); ty.value = /find|hunt|leads?|homestay|hotel|stores? in/.test(v) ? 'Lead hunt' : /pdf|catalog/.test(v) ? 'Catalogue PDF' : /catafy/.test(v) ? 'Catafy upload' : /\?|what|how|which|price of|research/.test(v) ? 'Research' : ty.value; };
+    ta.addEventListener('input', guess);
+    const mic = $('#a-mic', s);
+    if (mic && SR) {
+      let rec = null; const startRec = () => { rec = new SR(); rec.lang = 'en-IN'; rec.interimResults = true; rec.continuous = true; const base = ta.value ? ta.value + ' ' : '';
+        rec.onresult = (e) => { let t = ''; for (const r of e.results) t += r[0].transcript; ta.value = base + t; guess(); };
+        rec.onend = () => { $('#a-ml', s).textContent = 'Hold to talk'; mic.classList.remove('green'); };
+        rec.start(); $('#a-ml', s).textContent = 'Listening… let go when done'; mic.classList.add('green'); hap('hold'); };
+      mic.addEventListener('pointerdown', (e) => { e.preventDefault(); try { startRec(); } catch (x) {} });
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => mic.addEventListener(ev, () => { try { rec && rec.stop(); } catch (x) {} }));
+    }
+    $('#a-go', s).onclick = () => { const t = ta.value.trim(); if (!t) { toast('Say or type what you need', 'err'); return; } send('request', { code, type: ty.value, summary: t.slice(0, 120), details: t + (ty.value === 'Catalogue PDF' ? '\nShow prices: ' + (/no price|without price/i.test(t) ? 'no' : 'yes') : '') }, 'request'); D().requests.push({ 'Request ID': code, Created: nowIST(), Type: ty.value, Summary: t.slice(0, 120), Status: 'Waiting' }); LS.set('data', S.data); closeSheet(); toast('Request sent'); };
+  });
+}
+function formVyapar() {
+  sheet(`<h2 class="sheet-title">Vyapar export</h2><p class="muted small">Export the Sale Report (party-wise, last 12 months) from Vyapar as Excel. The Repeat-customer agent reads it on Monday.</p>
+    <label class="btn ghost block" style="cursor:pointer">Pick the file<input type="file" id="v-f" accept=".xls,.xlsx,.csv" hidden></label><div class="small muted" id="v-n" style="margin-top:8px"></div>
+    <button class="btn primary block" id="v-go" style="margin-top:12px">Upload</button>`, (s) => {
+    $('#v-f', s).onchange = (e) => { $('#v-n', s).textContent = e.target.files[0] ? e.target.files[0].name : ''; };
+    $('#v-go', s).onclick = async () => { const f = $('#v-f', s).files[0]; if (!f) return; const b64 = await fileToB64(f); send('upload', { folder: 'vyapar', files: [{ name: f.name, mime: f.type || 'application/vnd.ms-excel', b64 }] }, 'Vyapar export'); closeSheet(); toast('Uploading the export'); };
+  });
+}
+
+/* ---------- quote ---------- */
+let Q = null;
+const gstFor = (name) => /cushion|pillow|\bbeds?\b|mattress/i.test(name) ? 18 : 5;
+function openQuote(pre) {
+  Q = Q && !pre.customer && Q.items.length ? Q : { customer: pre.customer || '', contact: '', phone: pre.phone || '', address: '', items: [], act: { i: -1, f: 'qty' }, fresh: true, number: '' };
+  go('quote'); renderQuote();
+}
+function qTotals() { let taxable = 0, total = 0; Q.items.forEach(it => { taxable += it.qty * it.rate; total += (it.rate + it.rate * it.tax / 100) * it.qty; }); return { taxable, tax: total - taxable, total }; }
+function renderQuote() {
+  const t = qTotals(), a = Q.act;
+  const recents = LS.get('recentItems', []).slice(0, 8);
+  $('#quoteView').innerHTML = `
+    <div class="between"><button class="iconbtn" id="qBack" aria-label="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="col" style="align-items:center"><span class="lbl">MAYUR TEX</span><span class="grot" style="font-size:18px;font-weight:700">${Q.number ? 'Quote ' + esc(Q.number) : 'New quote'}</span></div>
+      <button class="iconbtn" id="qNew" aria-label="Start a new quote"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div>
+    <label class="card col" style="padding:10px 14px;gap:4px"><span class="lbl">For</span><input id="qCust" value="${esc(Q.customer)}" placeholder="Customer or firm" style="border:0;background:transparent;color:var(--text);font-size:15px;font-weight:600;padding:0;outline:none"></label>
+    <details class="card" style="padding:10px 14px"><summary class="small muted">Contact, phone, address</summary>
+      <input class="inp" id="qCon" placeholder="Contact person" value="${esc(Q.contact)}" style="margin-top:8px"><input class="inp" id="qPh" placeholder="Phone / WhatsApp" inputmode="tel" value="${esc(Q.phone)}" style="margin-top:8px"><input class="inp" id="qAd" placeholder="Address" value="${esc(Q.address)}" style="margin-top:8px"></details>
+    <div class="card" style="padding:0;overflow:hidden">${Q.items.map((it, i) => `<div class="qline ${a.i === i ? 'act' : ''}" data-ql="${i}"><div class="col" style="flex:1;min-width:0"><span style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(it.desc)}</span><span class="mono small muted"><span class="f ${a.i === i && a.f === 'rate' ? 'act' : ''}" data-qf="rate">₹${it.rate.toLocaleString('en-IN')}</span> · <span class="f ${a.i === i && a.f === 'tax' ? 'act' : ''}" data-qf="tax">${it.tax}%</span></span></div><span class="f ${a.i === i && a.f === 'qty' ? 'act' : ''}" data-qf="qty">×${it.qty}</span><span class="mono" style="font-size:13px;width:76px;text-align:right">${Math.round(it.qty * it.rate).toLocaleString('en-IN')}</span><button class="iconbtn" data-qdel="${i}" aria-label="Remove line" style="width:30px;height:30px;border:0;color:var(--muted)">${ICON.x}</button></div>`).join('') || '<div class="empty" style="padding:18px">Add items below</div>'}</div>
+    <div class="chips"><button class="chip" id="qAdd" style="border-style:dashed;border-color:rgba(92,242,255,.5);color:var(--cyan)">+ Item</button>${recents.map(r => `<button class="chip" data-qr="${esc(r.desc)}">${esc(r.desc)}</button>`).join('')}</div>
+    <div class="total holo"><div class="col"><span class="mono" style="font-size:10px;font-weight:700;letter-spacing:1.4px">GRAND TOTAL</span><span class="grot" style="font-size:38px;font-weight:700;letter-spacing:-1.5px;line-height:1">${inr(t.total)}</span></div><span class="mono" style="font-size:11px;font-weight:700;text-align:right">TAXABLE ${Math.round(t.taxable).toLocaleString('en-IN')}<br>GST ${Math.round(t.tax).toLocaleString('en-IN')}</span></div>
+    <div class="keypad">${['1', '2', '3', 'QTY', '4', '5', '6', 'RATE', '7', '8', '9', 'GST%', 'DEL', '0', '00', 'NEXT'].map(k => {
+      const f = { QTY: 'qty', RATE: 'rate', 'GST%': 'tax' }[k];
+      return `<button data-k="${k}" class="${/\d/.test(k) ? '' : 'k2'} ${f && a.f === f ? 'on' : ''}">${k === 'DEL' ? '⌫' : k}</button>`; }).join('')}</div>
+    <div class="grid2"><button class="btn green" id="qWA">Send PDF</button><button class="btn ghost" id="qX">Save .xlsx</button></div>
+    <div class="status-line" id="qSt"></div>`;
+  const v = $('#quoteView');
+  $('#qBack').onclick = () => go('queue');
+  $('#qNew').onclick = () => { if (Q.items.length && !confirmClear()) return; Q = null; openQuote({}); };
+  $('#qCust').oninput = (e) => Q.customer = e.target.value; $('#qCon').oninput = (e) => Q.contact = e.target.value; $('#qPh').oninput = (e) => Q.phone = e.target.value; $('#qAd').oninput = (e) => Q.address = e.target.value;
+  $$('[data-ql]', v).forEach(el => el.addEventListener('click', (e) => { if (e.target.closest('[data-qdel]')) return; const i = +el.dataset.ql; const f = e.target.closest('[data-qf]'); Q.act = { i, f: f ? f.dataset.qf : 'qty' }; Q.fresh = true; renderQuote(); }));
+  $$('[data-qdel]', v).forEach(b => b.onclick = () => { Q.items.splice(+b.dataset.qdel, 1); Q.act = { i: Math.min(Q.act.i, Q.items.length - 1), f: 'qty' }; hap('swipe'); renderQuote(); });
+  $$('[data-qr]', v).forEach(b => b.onclick = () => { const r = LS.get('recentItems', []).find(x => x.desc === b.dataset.qr); if (r) addQItem(r.desc, r.rate, r.tax); });
+  $('#qAdd').onclick = itemPicker;
+  $$('[data-k]', v).forEach(b => b.onclick = () => key(b.dataset.k));
+  $('#qWA').onclick = () => quoteOut('pdf'); $('#qX').onclick = () => quoteOut('xlsx');
+}
+function confirmClear() { return window.confirm('Start a new quote? This one is cleared.'); }
+function key(k) {
+  const a = Q.act; if (a.i < 0 || !Q.items[a.i]) { if (/\d/.test(k)) toast('Add an item first', 'err'); return; }
+  const it = Q.items[a.i];
+  if (k === 'QTY' || k === 'RATE' || k === 'GST%') { a.f = { QTY: 'qty', RATE: 'rate', 'GST%': 'tax' }[k]; Q.fresh = true; return renderQuote(); }
+  if (k === 'NEXT') { if (a.i < Q.items.length - 1) { a.i++; a.f = 'qty'; } else itemPicker(); Q.fresh = true; return renderQuote(); }
+  let cur = String(it[a.f] || 0);
+  if (k === 'DEL') cur = Q.fresh ? '0' : cur.slice(0, -1) || '0';
+  else cur = Q.fresh ? k.replace(/^0+/, '') || '0' : (cur === '0' ? k : cur + k);
+  Q.fresh = false; it[a.f] = Math.min(+cur || 0, a.f === 'tax' ? 28 : 99999999); renderQuote();
+}
+function addQItem(desc, rate, tax) {
+  Q.items.push({ desc, qty: 1, rate: +rate || 0, tax: tax != null ? +tax : gstFor(desc) }); Q.act = { i: Q.items.length - 1, f: 'qty' }; Q.fresh = true;
+  const rec = LS.get('recentItems', []).filter(r => r.desc !== desc); rec.unshift({ desc, rate: +rate || 0, tax: tax != null ? +tax : gstFor(desc) }); LS.set('recentItems', rec.slice(0, 20));
+  renderQuote(); hap('ok');
+}
+function itemPicker() {
+  const prods = D().products.filter(p => p.name);
+  sheet(`<h2 class="sheet-title">Add an item</h2><input class="inp" id="ip-q" placeholder="Search or type a new item, e.g. BS Amore 108x108" autofocus><div id="ip-l" class="col" style="margin-top:8px"></div>`, (s) => {
+    const inp = $('#ip-q', s), list = $('#ip-l', s);
+    const draw = () => {
+      const q = inp.value.trim().toLowerCase(); const rec = LS.get('recentItems', []);
+      const pool = [...rec.map(r => ({ name: r.desc, price: r.rate, tag: 'recent' })), ...prods.map(p => ({ name: p.name + (p.size && !String(p.name).includes(p.size) ? ' ' + p.size : ''), price: p.price, tag: p.id }))];
+      const seen = new Set(); const hits = pool.filter(p => { const k = p.name.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return !q || k.includes(q); }).slice(0, 25);
+      list.innerHTML = (q ? `<button class="lrow" data-new="1"><span class="sdot" style="background:var(--cyan)"></span><span style="flex:1">Use “${esc(inp.value.trim())}”</span><span class="mono small muted">NEW</span></button>` : '') + hits.map((p, i) => `<button class="lrow" data-i="${i}"><span class="sdot" style="background:${p.tag === 'recent' ? '#C9B6FF' : 'var(--dim)'}"></span><span style="flex:1">${esc(p.name)}</span><span class="mono small muted">${p.price ? '₹' + esc(p.price) : ''}</span></button>`).join('');
+      $$('[data-i]', list).forEach(b => b.onclick = () => { const p = hits[+b.dataset.i]; closeSheet(); addQItem(p.name, String(p.price || '').replace(/[^\d.]/g, ''), null); });
+      const n = $('[data-new]', list); if (n) n.onclick = () => { closeSheet(); addQItem(inp.value.trim(), 0, null); Q.act.f = 'rate'; renderQuote(); };
+    };
+    inp.oninput = draw; draw(); setTimeout(() => inp.focus(), 300);
+  });
+}
+async function quoteOut(kind) {
+  const st = $('#qSt'); const items = Q.items.filter(i => i.qty > 0 && i.desc);
+  if (!Q.customer.trim()) { toast('Add the customer name', 'err'); $('#qCust').focus(); return; }
+  if (!items.length) { toast('Add at least one item', 'err'); return; }
+  if (items.some(i => !i.rate)) { toast('Some items have no rate', 'err'); return; }
+  try {
+    if (!Q.number) { st.textContent = 'Getting the next quote number…'; Q.number = (await api('quoteNo', {}, 'qn-' + uid('q'))).number; renderQuote(); }
+  } catch (e) { $('#qSt').textContent = e.net ? 'You\'re offline — a quote number needs a connection.' : e.message; hap('err'); return; }
+  const st2 = $('#qSt'); st2.textContent = 'Building…';
+  const q = { customer: Q.customer.trim(), contact: Q.contact, phone: Q.phone, address: Q.address, items: items.map(i => ({ desc: i.desc, qty: i.qty, rate: i.rate, tax: i.tax })) };
+  const base = ('Quotation ' + Q.number.replace('/', '-') + ' ' + q.customer).replace(/[\\/:*?"<>|]/g, '').slice(0, 80);
+  try {
+    let blob, name, mime;
+    if (kind === 'pdf') { if (!window.jspdf) throw new Error('The PDF maker didn\'t load. Check your connection once.'); blob = buildPdf(q, Q.number); name = base + '.pdf'; mime = 'application/pdf'; }
+    else { if (typeof ExcelJS === 'undefined') throw new Error('The Excel maker didn\'t load. Check your connection once.'); blob = new Blob([await buildQuoteXlsx(q, Q.number)], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); name = base + '.xlsx'; mime = blob.type; }
+    const b64 = await fileToB64(blob);
+    send('quoteSave', { files: [{ name, mime, b64 }] }, 'quote ' + Q.number);
+    const file = new File([blob], name, { type: mime });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      st2.textContent = ''; hap('ok');
+      try { await navigator.share({ files: [file], title: name, text: kind === 'pdf' ? 'Quotation ' + Q.number + ' from Mayur Tex' : undefined }); } catch (e) {}
+    } else { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); st2.textContent = 'Downloaded. A copy is going to Drive → HQ Quotes.'; }
+    toast('Quote ' + Q.number + ' saved to Drive');
+  } catch (e) { st2.textContent = e.message; hap('err'); }
+}
+function buildPdf(q, number) {
+  const { jsPDF } = window.jspdf; const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+  const W = doc.internal.pageSize.getWidth(), NAVY = [13, 31, 60], BLUE = [30, 77, 140], GOLD = [200, 152, 42], GREY = [68, 68, 68];
+  doc.setFillColor(...NAVY); doc.rect(0, 0, W, 92, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(24); doc.text('MAYUR TEX', W / 2, 34, { align: 'center' });
+  doc.setFontSize(9); doc.setTextColor(...GOLD); doc.setFont('helvetica', 'normal'); doc.text('Wholesale Dealers in Bedspreads, Curtains, Blankets, Door Mats, Bedsheets, Towels & Sofa Backs', W / 2, 50, { align: 'center' });
+  doc.setTextColor(170, 187, 204); doc.setFontSize(8); doc.text('8868839339 / 9900470721 / 63609 84294  |  moheyhomes@gmail.com  |  moheyhome.com', W / 2, 63, { align: 'center' });
+  doc.text("1421, 8th Cross, Irwin Road, Mysuru – 570001  |  Branch: #4, TAPCMS Warehousing, Industrial 'A' Layout, Bannimantap", W / 2, 74, { align: 'center' });
+  doc.text('GSTIN: 29ACMPB2808F1ZS', W / 2, 85, { align: 'center' });
+  doc.setFillColor(...BLUE); doc.rect(0, 100, W, 24, 'F'); doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.text('PRICE QUOTATION', W / 2, 116, { align: 'center' });
+  const d = ist(), dd = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: '2-digit' }), vv = new Date(d.getTime() + 30 * 864e5).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: '2-digit' });
+  doc.setFontSize(9); doc.setTextColor(...GREY);
+  const L = [['Quote No.', number], ['Date', dd], ['Valid Until', vv], ['Prepared By', 'Sales Team']], R = [['Customer / Firm', q.customer], ['Contact Person', q.contact || ''], ['Phone / WhatsApp', q.phone || ''], ['Address', q.address || '']];
+  L.forEach((x, i) => { const y = 144 + i * 14; doc.setFont('helvetica', 'bold'); doc.text(x[0] + ' :', 40, y); doc.setFont('helvetica', 'normal'); doc.text(String(x[1]), 130, y); });
+  R.forEach((x, i) => { const y = 144 + i * 14; doc.setFont('helvetica', 'bold'); doc.text(x[0] + ' :', W / 2 + 10, y); doc.setFont('helvetica', 'normal'); doc.text(String(x[1]).slice(0, 70), W / 2 + 120, y); });
+  let taxable = 0, total = 0;
+  const body = q.items.map((it, i) => { const amt = (it.rate + it.rate * it.tax / 100) * it.qty; taxable += it.qty * it.rate; total += amt; return [i + 1, it.desc, it.qty, 'Rs ' + it.rate.toLocaleString('en-IN'), it.tax + '%', 'Rs ' + Math.round(amt).toLocaleString('en-IN')]; });
+  doc.autoTable({ startY: 206, head: [['Sr.', 'Item Description', 'Quantity', 'Rate', 'Tax %', 'Amount']], body, theme: 'grid',
+    headStyles: { fillColor: NAVY, textColor: 255, fontStyle: 'bold', halign: 'center' }, styles: { fontSize: 10, textColor: GREY, lineColor: [221, 221, 221] },
+    alternateRowStyles: { fillColor: [239, 244, 251] }, columnStyles: { 0: { halign: 'center', cellWidth: 40 }, 2: { halign: 'center' }, 3: { halign: 'right' }, 4: { halign: 'center' }, 5: { halign: 'right', fontStyle: 'bold' } }, margin: { left: 40, right: 40 } });
+  let y = doc.lastAutoTable.finalY + 14;
+  [['TAXABLE AMOUNT', taxable], ['TAX AMOUNT', total - taxable], ['GRAND TOTAL', total]].forEach((r, i) => {
+    if (i === 2) { doc.setFillColor(...BLUE); doc.rect(W - 300, y - 12, 260, 18, 'F'); doc.setTextColor(255, 255, 255); } else doc.setTextColor(...GREY);
+    doc.setFont('helvetica', 'bold'); doc.text(r[0], W - 290, y); doc.text('Rs ' + Math.round(r[1]).toLocaleString('en-IN'), W - 50, y, { align: 'right' }); y += 20;
+  });
+  y += 6; if (y > 430) { doc.addPage(); y = 50; }
+  doc.setFillColor(...NAVY); doc.rect(40, y, W - 80, 16, 'F'); doc.setTextColor(255, 255, 255); doc.text('TERMS & CONDITIONS', 48, y + 11); y += 28;
+  doc.setTextColor(...GREY); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+  ['All prices are in INR and EXCLUDE GST. Applicable GST (5% on textiles) will be charged extra as per government norms.', 'Delivery charges are NOT included — freight costs will be billed separately based on location and order weight.', 'Minimum Order Quantity (MOQ) may apply for certain products. Please confirm with our sales team before ordering.', 'Payment Terms: 100% advance payment required on order confirmation.', 'Lead Time: 7-10 working days from order confirmation and advance payment receipt.', 'This quotation is valid for 30 days from date of issue. Prices subject to change after validity period.']
+    .forEach((t, i) => { doc.text((i + 1) + '.  ' + t, 48, y); y += 13; });
+  y += 18; doc.setFont('helvetica', 'bold'); doc.text('Customer Signature & Stamp:', 48, y); doc.text('For MAYUR TEX', W - 48, y, { align: 'right' });
+  return doc.output('blob');
+}
+/* Mayur Tex quote workbook (same layout as the HQ app and the quotation template) */
+async function buildQuoteXlsx(q, number) {
+  const NAVY = 'FF0D1F3C', BLUE = 'FF1E4D8C', GOLD = 'FFC8982A', GREY = 'FF444444', LIGHT = 'FFF2F6FC', BAND = 'FFEFF4FB', BORDER = 'FFDDDDDD';
+  const wb = new ExcelJS.Workbook(); wb.creator = 'Mohey HQ';
+  const ws = wb.addWorksheet((q.customer.replace(/[\\/*?:[\]]/g, '').slice(0, 31)) || 'Quotation', { views: [{ showGridLines: false }] });
+  ws.pageSetup = { orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 1, paperSize: 9 };
+  [84, 140, 67, 80, 92, 52, 56, 88].forEach((w, i) => { ws.getColumn(i + 1).width = w / 7; });
+  const font = (o) => Object.assign({ name: 'Calibri' }, o);
+  const fill = (c) => ({ type: 'pattern', pattern: 'solid', fgColor: { argb: c } });
+  const thin = { style: 'thin', color: { argb: BORDER } }; const box = { top: thin, left: thin, bottom: thin, right: thin };
+  const band = (r, text, f, c, size, bold, align) => { ws.mergeCells(`A${r}:H${r}`); const cell = ws.getCell(`A${r}`); cell.value = text; cell.fill = fill(c); cell.font = font({ color: { argb: f }, size, bold }); cell.alignment = { horizontal: align || 'center', vertical: 'middle' }; };
+  const H = { 1: 38, 2: 16, 3: 15, 4: 14, 5: 13, 6: 6, 7: 22, 8: 5, 14: 6 }; Object.keys(H).forEach(r => ws.getRow(+r).height = H[r]);
+  for (let r = 9; r <= 13; r++) ws.getRow(r).height = 17;
+  band(1, 'MAYUR TEX', 'FFFFFFFF', NAVY, 20, true);
+  band(2, 'Wholesale Dealers in Bedspreads, Curtains, Blankets, Door Mats, Bedsheets, Towels & Sofa Backs', GOLD, NAVY, 10);
+  band(3, '📞 8868839339 / 9900470721 / 63609 84294   |   ✉ moheyhomes@gmail.com   |   🌐 moheyhome.com', 'FFAABBCC', NAVY, 9);
+  band(4, "📍 1421, 8th Cross, Irwin Road, Mysuru – 570001   |   Branch: #4, TAPCMS Warehousing, Industrial 'A' Layout, Bannimantap", 'FF8899BB', NAVY, 8);
+  band(5, 'GSTIN: 29ACMPB2808F1ZS', 'FFAABBCC', NAVY, 8);
+  band(7, 'PRICE QUOTATION', 'FFFFFFFF', BLUE, 13, true);
+  ws.mergeCells('A9:D9'); ws.mergeCells('E9:H9');
+  [['A9', 'QUOTATION DETAILS'], ['E9', 'BILL TO']].forEach(([a, t]) => { const c = ws.getCell(a); c.value = t; c.fill = fill(BLUE); c.font = font({ color: { argb: 'FFFFFFFF' }, size: 9, bold: true }); c.alignment = { horizontal: 'left', vertical: 'middle', indent: 1 }; });
+  const d = ist(); const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const valid = new Date(date.getTime() + 30 * 864e5);
+  const left = [['Quote No. :', number, '@'], ['Date :', date, 'd-mmm-yy'], ['Valid Until :', valid, 'd-mmm-yy'], ['Prepared By :', 'Sales Team']];
+  const right = [['Customer / Firm :', q.customer], ['Contact Person :', q.contact], ['Phone / WhatsApp :', q.phone], ['Address :', q.address]];
+  left.forEach((x, i) => {
+    const r = 10 + i; const l = ws.getCell(`A${r}`); l.value = x[0]; l.fill = fill(LIGHT); l.font = font({ color: { argb: GREY }, size: 9, bold: true });
+    ws.mergeCells(`B${r}:D${r}`); const v = ws.getCell(`B${r}`); v.value = x[1]; v.font = font({ color: { argb: NAVY }, size: 9 }); if (x[2]) v.numFmt = x[2]; v.alignment = { horizontal: 'left' };
+    const rl = ws.getCell(`E${r}`); rl.value = right[i][0]; rl.font = font({ color: { argb: GREY }, size: 9, bold: true });
+    ws.mergeCells(`F${r}:H${r}`); const rv = ws.getCell(`F${r}`); rv.value = right[i][1] || ''; rv.font = font({ color: { argb: NAVY }, size: 9, bold: true });
+  });
+  const head = 15; ws.getRow(head).height = 18;
+  ws.mergeCells(`B${head}:C${head}`); ws.mergeCells(`G${head}:H${head}`);
+  [['A', 'Sr.'], ['B', 'Item Description'], ['D', 'Quantity'], ['E', 'Rate (₹)'], ['F', 'Tax %'], ['G', 'Amount (₹)']].forEach(([c, t]) => { ws.getCell(c + head).value = t; });
+  'ABCDEFGH'.split('').forEach(c => { const cell = ws.getCell(c + head); cell.fill = fill(NAVY); cell.font = font({ color: { argb: 'FFFFFFFF' }, size: 10, bold: true }); cell.alignment = { horizontal: 'center', vertical: 'middle' }; cell.border = box; });
+  ws.getCell('A' + head).note = 'Made in the Mohey HQ phone app on ' + todayIST();
+  const nRows = Math.max(10, q.items.length); const first = head + 1, lastRow = head + nRows;
+  let taxable = 0, grand = 0;
+  for (let i = 0; i < nRows; i++) {
+    const r = first + i, it = q.items[i]; ws.getRow(r).height = 18;
+    ws.mergeCells(`B${r}:C${r}`); ws.mergeCells(`G${r}:H${r}`);
+    const bg = i % 2 ? BAND : 'FFFFFFFF';
+    'ABCDEFGH'.split('').forEach(c => { const cell = ws.getCell(c + r); cell.fill = fill(bg); cell.border = box; cell.font = font({ color: { argb: GREY }, size: 10 }); });
+    if (it) {
+      const amt = (it.rate + it.rate * it.tax / 100) * it.qty; taxable += it.qty * it.rate; grand += amt;
+      ws.getCell(`A${r}`).value = i + 1; ws.getCell(`A${r}`).alignment = { horizontal: 'center' };
+      ws.getCell(`B${r}`).value = it.desc;
+      const D_ = ws.getCell(`D${r}`); D_.value = it.qty; D_.alignment = { horizontal: 'center' };
+      const E = ws.getCell(`E${r}`); E.value = it.rate; E.numFmt = '"₹" #,##0'; E.font = font({ color: { argb: NAVY }, size: 10, bold: true });
+      const F = ws.getCell(`F${r}`); F.value = it.tax / 100; F.numFmt = '0%'; F.alignment = { horizontal: 'center' }; F.font = font({ color: { argb: NAVY }, size: 10, bold: true });
+      const G = ws.getCell(`G${r}`); G.value = { formula: `(E${r}+(E${r}*F${r}))*D${r}`, result: amt }; G.numFmt = '"₹" #,##0'; G.font = font({ color: { argb: NAVY }, size: 10, bold: true });
+    }
+  }
+  const tRow = lastRow + 2;
+  const totals = [['TAXABLE AMOUNT', { formula: `SUMPRODUCT(D${first}:D${lastRow},E${first}:E${lastRow})`, result: taxable }], ['TAX AMOUNT', { formula: `G${tRow + 2}-G${tRow}`, result: grand - taxable }], ['GRAND TOTAL', { formula: `SUM(G${first}:G${lastRow})`, result: grand }]];
+  totals.forEach(([label, val], i) => {
+    const r = tRow + i; ws.getRow(r).height = 20; ws.mergeCells(`B${r}:F${r}`); ws.mergeCells(`G${r}:H${r}`);
+    const L = ws.getCell(`B${r}`); L.value = label; L.alignment = { horizontal: 'right', vertical: 'middle', indent: 1 };
+    const V = ws.getCell(`G${r}`); V.value = val; V.numFmt = '"₹" #,##0'; V.alignment = { horizontal: 'right', vertical: 'middle' };
+    const gt = i === 2;
+    ['B', 'C', 'D', 'E', 'F', 'G', 'H'].forEach(c => { const cell = ws.getCell(c + r); cell.border = box; if (gt) cell.fill = fill(BLUE); });
+    L.font = font({ size: 11, bold: true, color: { argb: gt ? 'FFFFFFFF' : GREY } }); V.font = font({ size: gt ? 11 : 10, bold: true, color: { argb: gt ? 'FFFFFFFF' : NAVY } });
+  });
+  const termsHead = tRow + 4;
+  band(termsHead, 'TERMS & CONDITIONS', 'FFFFFFFF', NAVY, 10, true, 'left');
+  ['All prices are in INR and EXCLUDE GST. Applicable GST (5% on textiles) will be charged extra as per government norms.',
+    'Delivery charges are NOT included — freight costs will be billed separately based on location and order weight.',
+    'Minimum Order Quantity (MOQ) may apply for certain products. Please confirm with our sales team before ordering.',
+    'Payment Terms: 100% advance payment required on order confirmation.',
+    'Lead Time: 7-10 working days from order confirmation and advance payment receipt.',
+    'This quotation is valid for 30 days from date of issue. Prices subject to change after validity period.']
+    .forEach((t, i) => { const r = termsHead + 1 + i; ws.getRow(r).height = 16; band(r, (i + 1) + '.  ' + t, GREY, i % 2 ? 'FFFFFFFF' : LIGHT, 9, false, 'left'); });
+  const sig = termsHead + 8; ws.getRow(sig).height = 17;
+  ws.mergeCells(`A${sig}:D${sig}`); ws.mergeCells(`E${sig}:H${sig}`);
+  ws.getCell(`A${sig}`).value = 'Customer Signature & Stamp:'; ws.getCell(`A${sig}`).font = font({ color: { argb: GREY }, size: 9, bold: true });
+  ws.getCell(`E${sig}`).value = 'For MAYUR TEX'; ws.getCell(`E${sig}`).font = font({ color: { argb: GREY }, size: 9, bold: true }); ws.getCell(`E${sig}`).alignment = { horizontal: 'right' };
+  const line = sig + 3; ws.mergeCells(`A${line}:D${line}`); ws.mergeCells(`E${line}:H${line}`);
+  ws.getCell(`A${line}`).value = '_______________________________'; ws.getCell(`E${line}`).value = 'Authorised Signatory: ___________________';
+  [`A${line}`, `E${line}`].forEach(a => ws.getCell(a).font = font({ color: { argb: 'FFAAAAAA' } })); ws.getCell(`E${line}`).alignment = { horizontal: 'right' };
+  band(line + 2, 'Thank you for your business!   📞 8868839339 / 636984294   |   ✉ moheyhomes@gmail.com   |   🌐 moheyhome.com', 'FFFFFFFF', NAVY, 9);
+  ws.getRow(line + 2).height = 20;
+  ws.pageSetup.printArea = `A1:H${line + 2}`;
+  return await wb.xlsx.writeBuffer();
+}
+
+/* ---------- pairing ---------- */
+function showPair(msg) { $('#pair').classList.add('on'); $('#pairUrl').value = S.url || ''; $('#pairKey').value = S.key || ''; $('#pairErr').textContent = msg || ''; }
+$('#pairGo').addEventListener('click', async () => {
+  const u = $('#pairUrl').value.trim(), k = $('#pairKey').value.trim();
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]{20,}\/exec$/.test(u)) { $('#pairErr').textContent = 'The URL should look like https://script.google.com/macros/s/…/exec'; return; }
+  if (!k) { $('#pairErr').textContent = 'Paste the key too.'; return; }
+  S.url = u; S.key = k; $('#pairErr').textContent = 'Checking…';
+  try { await api('ping', {}); LS.set('url', u); LS.set('key', k); $('#pair').classList.remove('on'); toast('Connected'); load(true); flush(); }
+  catch (e) { $('#pairErr').textContent = e.net ? 'Couldn\'t reach it. Check the URL and that the web app is deployed for "Anyone".' : e.message; }
+});
+
+/* ---------- boot ---------- */
+function renderAll() { renderQueue(); if (current === 'leads') renderLeads(); if (current === 'jobs') renderJobs(); else { const ready = D().requests.filter(r => r.Status === 'Ready to bill').length; const b = $('#jobsBadge'); b.style.display = ready ? 'flex' : 'none'; b.textContent = ready; } }
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+const start = (location.hash || '#queue').slice(1);
+go(['queue', 'leads', 'jobs'].includes(start) ? start : 'queue');
+if (!S.url || !S.key) showPair(); else { renderAll(); load(); flush(); setTimeout(maybeBrief, 600); }
+updateOutbox();
+})();
+</script>
+</body>
+</html>

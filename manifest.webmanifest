@@ -1,0 +1,23 @@
+{
+  "id": "./",
+  "name": "Mohey HQ",
+  "short_name": "Mohey HQ",
+  "description": "Leads, quotes, captures and your AI agents for Mohey Home and Mayur Tex",
+  "lang": "en-IN",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone"],
+  "orientation": "portrait",
+  "background_color": "#07080F",
+  "theme_color": "#07080F",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "UPI bills", "url": "./#queue", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}
