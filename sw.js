@@ -1,7 +1,7 @@
 /* Mohey HQ service worker: opens instantly and works offline.
    App files: cache first, refreshed in the background. Fonts and the Excel/PDF makers: cached after first use.
    Your data never goes through here: API calls are POSTs to Google and are never cached. */
-const VERSION = 'mohey-hq-1.0.0';
+const VERSION = 'mohey-hq-1.1.0';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 const EXT = 'mohey-hq-ext';
 

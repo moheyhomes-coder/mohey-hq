@@ -298,7 +298,7 @@ select.inp{appearance:none}
 <script>
 (() => {
 'use strict';
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -446,6 +446,41 @@ const AGENTS = [
   { name: 'Catafy Uploader', where: 'pc', days: [0, 1, 2, 3, 4, 5, 6], t: '12:13', lt: '21:07' }
 ];
 const mode = () => (D().settings.working_computer || 'Store');
+/* Run now: opens Claude with a ready message that starts the agent at once (Claude has the fire_trigger tool) */
+const TRIG = {
+  runner: ['trig_01KdQ2v26XusGmvACoNM3Xyi', 'Request Runner – Mohey Home', 'Dhruv started this run by hand. Skip STEP 0 (working hours) for this run only.'],
+  catalogue: ['trig_01NWAbP8rqEbSm1X4n6E6B4U', 'Catalogue Agent – Mohey Home'],
+  hunter: ['trig_01YcNWMH6pvZ3fMxcnuA5xzm', 'Lead Hunter – Mohey Home'],
+  followup: ['trig_0188c9xjSYhjJUw8DsE7EVgx', 'Follow-up Chaser – Mohey Home'],
+  tender: ['trig_017Hm9fJPgECSyfRPyhw21uz', 'Tender Watcher – Mohey Home'],
+  upiStore: ['trig_01GXcqFixdiFwa1PFUsG3PEv', 'UPI Bills (store computer) – Mohey Home'],
+  catafyStore: ['trig_01MvYQmeE3A37SSd8fQuDnoX', 'Catafy Uploader (store computer) – Mohey Home'],
+  catafyLaptop: ['trig_01TDCLdZJysRGeL4HavPe4m4', 'Catafy Uploader (laptop) – Mohey Home']
+};
+function runNowMsg(k) {
+  const t = TRIG[k];
+  return 'Run now: load the fire_trigger tool with ToolSearch and use it to start my scheduled task ' + t[0] + ' ("' + t[1] + '")' + (t[2] ? ' with the text: "' + t[2] + '"' : '') + '. Just confirm it started; its result comes to me as a message.';
+}
+function openClaude(msg) {
+  const q = encodeURIComponent(msg);
+  hap('ok'); location.href = 'claude://claude.ai/new?q=' + q;
+  setTimeout(() => { if (document.visibilityState === 'visible') window.open('https://claude.ai/new?q=' + q, '_blank'); }, 1600);
+}
+async function runNow(k, waitForSend) {
+  if (k === 'upi' || k === 'catafy') {
+    const m = mode();
+    if (k === 'upi') { if (m === 'Laptop') { toast('UPI Bills isn\'t set up on the laptop yet — switch to Store or Auto', 'err'); return; } k = 'upiStore'; }
+    else k = m === 'Laptop' ? 'catafyLaptop' : 'catafyStore';
+  }
+  if (waitForSend) {
+    toast('Sending, then opening Claude…');
+    for (let i = 0; i < 40; i++) { let n = 1; try { n = (await DB.all()).length; } catch (e) {} if (!n) break; await new Promise(r => setTimeout(r, 500)); flush(); }
+    let left = 0; try { left = (await DB.all()).length; } catch (e) {}
+    if (left) { toast('Still offline — it will run at the next hourly check', 'err'); return; }
+  }
+  openClaude(runNowMsg(k));
+}
+const runNowToggle = (id, note) => `<label class="row" style="margin-top:14px;padding:12px 14px;border-radius:14px;border:1px solid rgba(92,242,255,.35);background:rgba(92,242,255,.06);gap:12px;cursor:pointer"><input type="checkbox" id="${id}" checked style="width:20px;height:20px;accent-color:#5CF2FF"><span class="col"><b style="font-size:14px">Run now</b><span class="small muted">${note}</span></span></label>`;
 function todaysRuns() {
   const d = ist(), dow = d.getDay(), m = mode(), runs = [];
   AGENTS.forEach(a => {
@@ -521,7 +556,7 @@ function badge(it) {
 }
 const HINTS = {
   lead: ['← LATER', '↑ CALL', 'WHATSAPP →'], fu: ['← LATER', '↑ CALL', 'NUDGE →'], tender: ['← SKIP', '', 'INTERESTED →'],
-  upi: ['← LATER', '', 'BILL IT →'], fail: ['← LATER', '', 'GOT IT →'], need: ['← LATER', '', 'DONE →']
+  upi: ['← LATER', '', 'RUN UPI BILLS →'], fail: ['← LATER', '', 'GOT IT →'], need: ['← LATER', '', 'DONE →']
 };
 const STAMPS = { lead: ['LATER', 'CALL', 'WHATSAPP'], fu: ['LATER', 'CALL', 'NUDGE'], tender: ['SKIP', '', 'INTERESTED'], upi: ['LATER', '', 'BILL IT'], fail: ['LATER', '', 'GOT IT'], need: ['LATER', '', 'DONE'] };
 function cardHTML(it) {
@@ -609,7 +644,7 @@ function act(it, dir) {
     return;
   }
   if (it.kind === 'tender') { it.x.Status = 'Interested'; LS.set('data', S.data); send('tenderSet', { id: it.x['Tender ID'], status: 'Interested' }, 'tender'); toast('Marked interested'); return; }
-  if (it.kind === 'upi') { snooze(it.key, 1); toast('Open Claude on the Vyapar computer and run “UPI Bills”'); return; }
+  if (it.kind === 'upi') { snooze(it.key, 1); runNow('upi'); return; }
   hideKey(it.key); toast('Done');
 }
 function hideKey(k) { D().hidden.push(k); LS.set('data', S.data); send('hide', { key: k }, 'done'); }
@@ -818,11 +853,15 @@ function renderJobs() {
     </div>
     <div style="border-radius:22px;padding:2px" class="holo"><div style="border-radius:20px;background:var(--panel);padding:14px 16px" class="row">
       <div class="col" style="flex:1"><span class="lbl">Run by hand</span><span style="font-weight:700;font-size:15px">UPI bills · ${ready.length ? ready.length + ' ready' : 'nothing ready'}</span><span class="small muted">${ready.length ? esc(ready.map(r => (r['Result note'] || '').split('|')[0].replace('Date:', '').trim()).join(', ')) : 'Send them with Capture → UPI bills'}</span></div>
-      <a class="btn ${ready.length ? 'green' : 'ghost'}" style="height:44px;font-size:13px;text-decoration:none" href="https://claude.ai/" target="_blank" rel="noopener">Open Claude</a></div></div>
+      <button class="btn ${ready.length ? 'green' : 'ghost'}" style="height:44px;font-size:13px" id="runUpi">${m === 'Laptop' ? 'Store PC only' : 'Run on store PC'}</button></div></div>
+    <div class="col"><span class="lbl">Run an agent now</span><span class="small muted" style="margin:4px 0 8px">Opens Claude with the message ready — tap send. Computer jobs need that computer on and free.</span>
+      <div class="grid2">${[['runner', 'Requests'], ['catalogue', 'Catalogue'], ['hunter', 'Lead hunt'], ['followup', 'Follow-ups'], ['tender', 'Tenders'], ['catafy', 'Catafy upload']].map(([k, t]) => `<button class="btn ghost" data-run="${k}" style="height:46px;font-size:14px">${t}</button>`).join('')}</div></div>
     <div class="col"><span class="lbl" style="margin-bottom:4px">Today · ${ist().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</span>${tl}</div>
     <div class="col"><span class="lbl">Working hours for requests</span><div class="seg" id="whSeg" style="grid-template-columns:repeat(2,1fr);margin-top:6px">${[['Store', 'Store 10–7'], ['Extended', 'Extended 7–11']].map(([k, t]) => `<button data-wh="${k}" class="${wh === k ? 'on' : ''}">${t}</button>`).join('')}</div></div>
     <div class="col"><span class="lbl">My requests</span>${reqs.map(r => `<div class="req"><span class="pill ${pillFor(r.Status)}" style="flex-shrink:0">${esc((r.Status || '').toUpperCase())}</span><div class="col" style="flex:1;min-width:0"><span style="font-size:14px;font-weight:600">${esc(r.Summary || r.Type)}</span><span class="small muted">${esc(r.Type)} · ${esc(fmtDay(r.Created))}${r['Result note'] ? ' · ' + esc(String(r['Result note']).slice(0, 120)) : ''}</span>${r['Result link'] ? `<a class="small" href="${esc(r['Result link'])}" target="_blank" rel="noopener">Open result</a>` : ''}</div></div>`).join('') || '<div class="empty">No requests yet</div>'}</div>
     <div class="col"><span class="lbl">Agent feed</span>${data.log.slice().reverse().slice(0, 14).map(g => `<div class="req"><span class="mono small" style="width:46px;flex-shrink:0;color:var(--muted)">${esc(fmtDay(g.Date))}</span><div class="col" style="flex:1"><span style="font-size:13px;font-weight:600">${esc(g.Agent)}</span><span class="small muted">${esc(String(g.Summary || '').slice(0, 220))}</span></div></div>`).join('') || '<div class="empty">No agent reports yet</div>'}</div>`;
+  $('#runUpi').onclick = () => runNow('upi');
+  $$('#jobsView [data-run]').forEach(b => b.onclick = () => runNow(b.dataset.run));
   $('#pcSeg').onclick = (e) => { const b = e.target.closest('[data-pc]'); if (!b) return; data.settings.working_computer = b.dataset.pc; LS.set('data', S.data); send('setting', { key: 'working_computer', value: b.dataset.pc }, 'computer switch'); hap('ok'); renderJobs(); renderQueue(); };
   $('#whSeg').onclick = (e) => { const b = e.target.closest('[data-wh]'); if (!b) return; data.settings.working_hours = b.dataset.wh; LS.set('data', S.data); send('setting', { key: 'working_hours', value: b.dataset.wh }, 'working hours'); renderJobs(); };
   const b = $('#jobsBadge'); b.style.display = ready.length ? 'flex' : 'none'; b.textContent = ready.length;
@@ -963,6 +1002,7 @@ function formUPI() {
     <label class="flabel" for="u-d">Date of the payments</label><input class="inp" type="date" id="u-d" value="${todayIST()}">
     ${pickerHTML('u', 'Photos: sales book page or PhonePe screenshots')}
     <label class="flabel" for="u-a">Or type the amounts</label><textarea class="inp" id="u-a" placeholder="e.g. 1250, 780, 2400" inputmode="decimal" style="min-height:70px"></textarea>
+    ${runNowToggle('u-now', 'Opens Claude to read the amounts right away instead of at the next hourly check.')}
     <button class="btn primary block" id="u-go" style="margin-top:16px">Send to Claude</button>`, (s) => {
     const files = photoPicker(s, 'u');
     $('#u-go', s).onclick = () => {
@@ -971,7 +1011,7 @@ function formUPI() {
       const details = 'Date: ' + dt + (amt ? '\nAmounts typed: ' + amt : '') + (files.length ? '\nPhotos: ' + files.length : '');
       send('request', { code, type: 'UPI bills', summary: 'UPI bills for ' + dt, details, files: stripPreview(files) }, 'UPI bills');
       D().requests.push({ 'Request ID': code, Created: nowIST(), Type: 'UPI bills', Summary: 'UPI bills for ' + dt, Status: 'Waiting' }); LS.set('data', S.data);
-      closeSheet(); toast('Sent — Claude will read the amounts');
+      const now = $('#u-now', s).checked; closeSheet(); if (now) runNow('runner', true); else toast('Sent — Claude will read the amounts');
     };
   });
 }
@@ -985,14 +1025,14 @@ function formProduct() {
     <div class="grid2"><div><label class="flabel" for="p-s">Size</label><input class="inp" id="p-s" placeholder="108x108"></div><div><label class="flabel" for="p-p">Price ₹</label><input class="inp" id="p-p" inputmode="decimal"></div></div>
     <div class="grid2"><div><label class="flabel" for="p-m">Material</label><input class="inp" id="p-m"></div><div><label class="flabel" for="p-v">Vyapar code</label><input class="inp" id="p-v"></div></div>
     <label class="flabel" for="p-o">Notes</label><input class="inp" id="p-o">
-    <p class="small muted">The Catalogue Agent turns this into a catalogue entry on its next run.</p>
-    <button class="btn primary block" id="p-go">Save product</button>`, (s) => {
+    ${runNowToggle('p-now', 'Opens Claude so the Catalogue Agent writes the entry now, not tomorrow morning.')}
+    <button class="btn primary block" id="p-go" style="margin-top:12px">Save product</button>`, (s) => {
     const files = photoPicker(s, 'p');
     $('#p-go', s).onclick = () => {
       if (!files.length) { toast('Add at least one photo', 'err'); return; }
       const f = { cat: $('#p-c', s).value, name: $('#p-n', s).value.trim(), size: $('#p-s', s).value.trim(), price: $('#p-p', s).value.trim(), mat: $('#p-m', s).value.trim(), code: $('#p-v', s).value.trim(), notes: $('#p-o', s).value.trim() };
       const notes = ['Save code: ' + code, 'Category: ' + f.cat, f.name && 'Name/design: ' + f.name, f.size && 'Size: ' + f.size, f.price && 'Price: ' + f.price, f.mat && 'Material: ' + f.mat, f.code && 'Vyapar item code: ' + f.code, f.notes && 'Notes: ' + f.notes].filter(Boolean).join('\n');
-      send('product', { code, label: f.name || f.cat, notes, files: stripPreview(files) }, 'product'); closeSheet(); toast('Product saved to the Catalogue Inbox');
+      send('product', { code, label: f.name || f.cat, notes, files: stripPreview(files) }, 'product'); const now = $('#p-now', s).checked; closeSheet(); if (now) runNow('catalogue', true); else toast('Product saved to the Catalogue Inbox');
     };
   });
 }
@@ -1002,12 +1042,13 @@ function formCard() {
     ${pickerHTML('c', 'Card photo')}
     <div class="grid2"><div><label class="flabel" for="c-s">Score</label><select class="inp" id="c-s"><option>Hot</option><option selected>Warm</option><option>Watch</option></select></div><div><label class="flabel" for="c-w">Where you met</label><input class="inp" id="c-w" placeholder="walked in"></div></div>
     <label class="flabel" for="c-n">Note</label><input class="inp" id="c-n" placeholder="e.g. needs 40 bedsheet sets for a new resort">
+    ${runNowToggle('c-now', 'Opens Claude to add the lead right away.')}
     <button class="btn primary block" id="c-go" style="margin-top:16px">Send</button>`, (s) => {
     const files = photoPicker(s, 'c');
     $('#c-go', s).onclick = () => {
       if (!files.length) { toast('Add the card photo', 'err'); return; }
       const details = ['Score: ' + $('#c-s', s).value, $('#c-w', s).value && 'Met: ' + $('#c-w', s).value, $('#c-n', s).value && 'Note: ' + $('#c-n', s).value].filter(Boolean).join('\n');
-      send('request', { code, type: 'Card to lead', summary: 'Visiting card' + ($('#c-n', s).value ? ' – ' + $('#c-n', s).value.slice(0, 60) : ''), details, files: stripPreview(files) }, 'card'); closeSheet(); toast('Card sent');
+      send('request', { code, type: 'Card to lead', summary: 'Visiting card' + ($('#c-n', s).value ? ' – ' + $('#c-n', s).value.slice(0, 60) : ''), details, files: stripPreview(files) }, 'card'); const now = $('#c-now', s).checked; closeSheet(); if (now) runNow('runner', true); else toast('Card sent');
     };
   });
 }
@@ -1018,8 +1059,8 @@ function formAsk(voice) {
     ${voice && SR ? `<button class="btn cyan block" id="a-mic" style="height:64px;margin-top:8px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span id="a-ml">Hold to talk</span></button>` : voice ? '<p class="small muted">Voice isn\'t available in this browser; type instead.</p>' : ''}
     <label class="flabel" for="a-t">What do you need?</label><textarea class="inp" id="a-t" placeholder="e.g. find homestays in Somwarpet that opened this year"></textarea>
     <label class="flabel" for="a-y">Type</label><select class="inp" id="a-y">${['Lead hunt', 'Research', 'Catalogue PDF', 'Catafy upload', 'Other'].map(x => `<option>${x}</option>`).join('')}</select>
-    <p class="small muted">The Request Runner picks it up at the next hourly check and tells you when it's done.</p>
-    <button class="btn primary block" id="a-go">Send</button>`, (s) => {
+    ${runNowToggle('a-now', 'Opens Claude to start it right away. Off: it runs at the next hourly check.')}
+    <button class="btn primary block" id="a-go" style="margin-top:12px">Send</button>`, (s) => {
     const ta = $('#a-t', s), ty = $('#a-y', s);
     const guess = () => { const v = ta.value.toLowerCase(); ty.value = /find|hunt|leads?|homestay|hotel|stores? in/.test(v) ? 'Lead hunt' : /pdf|catalog/.test(v) ? 'Catalogue PDF' : /catafy/.test(v) ? 'Catafy upload' : /\?|what|how|which|price of|research/.test(v) ? 'Research' : ty.value; };
     ta.addEventListener('input', guess);
@@ -1032,7 +1073,7 @@ function formAsk(voice) {
       mic.addEventListener('pointerdown', (e) => { e.preventDefault(); try { startRec(); } catch (x) {} });
       ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => mic.addEventListener(ev, () => { try { rec && rec.stop(); } catch (x) {} }));
     }
-    $('#a-go', s).onclick = () => { const t = ta.value.trim(); if (!t) { toast('Say or type what you need', 'err'); return; } send('request', { code, type: ty.value, summary: t.slice(0, 120), details: t + (ty.value === 'Catalogue PDF' ? '\nShow prices: ' + (/no price|without price/i.test(t) ? 'no' : 'yes') : '') }, 'request'); D().requests.push({ 'Request ID': code, Created: nowIST(), Type: ty.value, Summary: t.slice(0, 120), Status: 'Waiting' }); LS.set('data', S.data); closeSheet(); toast('Request sent'); };
+    $('#a-go', s).onclick = () => { const t = ta.value.trim(); if (!t) { toast('Say or type what you need', 'err'); return; } send('request', { code, type: ty.value, summary: t.slice(0, 120), details: t + (ty.value === 'Catalogue PDF' ? '\nShow prices: ' + (/no price|without price/i.test(t) ? 'no' : 'yes') : '') }, 'request'); D().requests.push({ 'Request ID': code, Created: nowIST(), Type: ty.value, Summary: t.slice(0, 120), Status: 'Waiting' }); LS.set('data', S.data); const now = $('#a-now', s).checked; closeSheet(); if (now) runNow('runner', true); else toast('Request sent'); };
   });
 }
 function formVyapar() {
